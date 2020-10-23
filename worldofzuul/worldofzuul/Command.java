@@ -21,30 +21,31 @@ package worldofzuul;
 
 public class Command
 {
-    private CommandWord commandWord;
-    private String secondWord;
+    // This is a container for the parsed input of commands, so it contains the action and description as enum and string respectively
+    // e.g. GO and "east"
 
+    // This is the enum, which is the action in the given text command
+    private CommandWord commandWord;
+    // This is the second word in the given text command, this would be the direction
+    private String secondWord;
+    // This takes an Enum and a second word as string and sets them to the variables
     public Command(CommandWord commandWord, String secondWord)
     {
         this.commandWord = commandWord;
         this.secondWord = secondWord;
     }
 
+    // Returns the Enum of this instance of a command. e.g. GO
     public CommandWord getCommandWord()
     {
         return commandWord;
     }
-
+    // Returns the second word of this instance of a command, which is a string. e.g. "east"
     public String getSecondWord()
     {
         return secondWord;
     }
-
-    public boolean isUnknown()
-    {
-        return (commandWord == CommandWord.UNKNOWN);
-    }
-
+    // Returns true if this command has a second word, no matter what it is
     public boolean hasSecondWord()
     {
         return (secondWord != null);
