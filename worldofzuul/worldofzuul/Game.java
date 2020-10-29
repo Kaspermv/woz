@@ -62,6 +62,13 @@ public class Game
 
         bank.setExit("right", city);
 
+        dirtRoad3.setExit("down",waterTreatmentPlant);
+        dirtRoad3.setExit("right",dirtRoad4);
+        dirtRoad3.setExit("up",waterPlant);
+        dirtRoad3.setExit("left", dirtRoad2);
+
+        
+        set
         // Sets start room
         currentRoom = home;
     }
