@@ -25,18 +25,18 @@ public class Command
     // e.g. GO and "east"
 
     // This is the enum, which is the action in the given text command
-    private CommandWord commandWord;
+    private Action commandWord;
     // This is the second word in the given text command, this would be the direction
     private String secondWord;
     // This takes an Enum and a second word as string and sets them to the variables
-    public Command(CommandWord commandWord, String secondWord)
+    public Command(Action commandWord, String secondWord)
     {
         this.commandWord = commandWord;
         this.secondWord = secondWord;
     }
 
     // Returns the Enum of this instance of a command. e.g. GO
-    public CommandWord getCommandWord()
+    public Action getCommandWord()
     {
         return commandWord;
     }

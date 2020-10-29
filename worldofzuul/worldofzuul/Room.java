@@ -12,6 +12,8 @@ public class Room
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
     private HashMap<String, Room> exits;
 
+
+
     public Room(String description) 
     {
         this.description = description;

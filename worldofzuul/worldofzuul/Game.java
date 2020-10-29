@@ -68,7 +68,7 @@ public class Game
         System.out.println();
         System.out.println("Welcome to the World of Zuul!");
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
-        System.out.println("Type '" + CommandWord.HELP + "' if you need help.");
+        System.out.println("Type '" + Action.HELP + "' if you need help.");
         System.out.println();
         // Gives the initial message of where the player is at game start
         System.out.println(currentRoom.getLongDescription());
@@ -80,24 +80,24 @@ public class Game
         boolean wantToQuit = false;
 
         // Stores the enum from the command in a variable
-        CommandWord commandWord = command.getCommandWord();
+        Action commandWord = command.getCommandWord();
 
         // If the enum is the UNKNOWN, which means it isn't one of the pre-made commands, it ends the game turn
-        if(commandWord == CommandWord.UNKNOWN) {
+        if(commandWord == Action.UNKNOWN) {
             // This should be sent to the GUI handler in the future
             System.out.println("I don't know what you mean...");
             return false;
         }
         // The help command
-        if (commandWord == CommandWord.HELP) {
+        if (commandWord == Action.HELP) {
             printHelp();
         }
         // The GO command calls the goRoom function, with the given command
-        else if (commandWord == CommandWord.GO) {
+        else if (commandWord == Action.GO) {
             goRoom(command);
         }
         // Sets the quit condition to true, if the correct quit command is the input
-        else if (commandWord == CommandWord.QUIT) {
+        else if (commandWord == Action.QUIT) {
             wantToQuit = quit(command);
         }
         return wantToQuit;

@@ -8,29 +8,29 @@ public class CommandWords
     // Having this object, makes the list of commands, and the custom functionality, available everywhere
 
     // A HashMap of the string and enum of the different commands, e.g. <"go",GO>
-    private HashMap<String, CommandWord> validCommands;
+    private HashMap<String, Action> validCommands;
 
     // Instantiated on startup from Parser, which is instantiated from Game
     public CommandWords()
     {
-        validCommands = new HashMap<String, CommandWord>();
+        validCommands = new HashMap<String, Action>();
         // For all the Enums/Actions, except UNKNOWN, they are put into the HashMap as values with the string version as key, making it usable in the parser
-        for(CommandWord command : CommandWord.values()) {
-            if(command != CommandWord.UNKNOWN) {
+        for(Action command : Action.values()) {
+            if(command != Action.UNKNOWN) {
                 validCommands.put(command.toString(), command);
             }
         }
     }
     // Takes a string input like "go" and returns it's Enum value, specified in the validCommands HashMap
-    public CommandWord getCommandWord(String commandWord)
+    public Action getCommandWord(String commandWord)
     {
-        CommandWord command = validCommands.get(commandWord);
+        Action command = validCommands.get(commandWord);
         // If the input string isn't a key in the HashMap, then it isn't a valid command/action, and therefore returns the UNKNOWN Enum
         if(command != null) {
             return command;
         }
         else {
-            return CommandWord.UNKNOWN;
+            return Action.UNKNOWN;
         }
     }
     // Unused boolean function to check if an input commands first word is a valid command
