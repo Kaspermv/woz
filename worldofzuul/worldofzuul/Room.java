@@ -12,12 +12,47 @@ public class Room
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
     private HashMap<String, Room> exits;
 
+    private int currentLevel = 1, maxLevel = 1;
+    private int price;
 
-
-    public Room(String description) 
+    public Room(String description)
     {
         this.description = description;
         exits = new HashMap<String, Room>();
+    }
+
+    // Returns true if this room can be bought/upgraded
+    public Boolean buyable(){
+        return (currentLevel < maxLevel);
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void buy(){
+        currentLevel++;
+    }
+
+    // Getters and setters for currentLevel and maxLevel
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public int getMaxLevel() {
+        return maxLevel;
+    }
+
+    public void setCurrentLevel(int currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+
+    public void setMaxLevel(int maxLevel) {
+        this.maxLevel = maxLevel;
     }
 
     // This is used on game startup, for setting the exit(s) of the reffered room.

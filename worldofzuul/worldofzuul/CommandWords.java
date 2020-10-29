@@ -15,19 +15,19 @@ public class CommandWords
     {
         validCommands = new HashMap<String, Action>();
         // For all the Enums/Actions, except UNKNOWN, they are put into the HashMap as values with the string version as key, making it usable in the parser
-        for(Action command : Action.values()) {
-            if(command != Action.UNKNOWN) {
-                validCommands.put(command.toString(), command);
+        for(Action action : Action.values()) {
+            if(action != Action.UNKNOWN) {
+                validCommands.put(action.toString(), action);
             }
         }
     }
     // Takes a string input like "go" and returns it's Enum value, specified in the validCommands HashMap
     public Action getCommandWord(String commandWord)
     {
-        Action command = validCommands.get(commandWord);
+        Action action = validCommands.get(commandWord);
         // If the input string isn't a key in the HashMap, then it isn't a valid command/action, and therefore returns the UNKNOWN Enum
-        if(command != null) {
-            return command;
+        if(action != null) {
+            return action;
         }
         else {
             return Action.UNKNOWN;
@@ -41,9 +41,9 @@ public class CommandWords
     // Prints all the keys of the valid commands, which is the string versions, on the same line. "go", "help" etc.
     public void showAll() 
     {
-        for(String command : validCommands.keySet()) {
+        for(String action : validCommands.keySet()) {
             // Should be sent to the GUI
-            System.out.print(command + "  ");
+            System.out.print(action + "  ");
         }
         System.out.println();
     }
