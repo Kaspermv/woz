@@ -23,9 +23,9 @@ public class Game
         // Creates all the rooms, and sets their description.
         home = new Room("in your home.");
         dirtRoad1 = new Room("outside on a dirt road.");
-        dirtRoad2 = new Room("outside on a dirt road.")
-        dirtRoad3 = new Room("outside on a dirt road.")
-        dirtRoad4 = new Room("outside on a dirt road.")
+        dirtRoad2 = new Room("outside on a dirt road.");
+        dirtRoad3 = new Room("outside on a dirt road.");
+        dirtRoad4 = new Room("outside on a dirt road.");
         city = new Room("in the big city.");
         bank = new Room("in the bank.");
         townHall = new Room("in the town hall, there is a terminal.");
@@ -47,6 +47,20 @@ public class Game
         home.setExit("up", dirtRoad1);
 
         dirtRoad1.setExit("down", home);
+        dirtRoad1.setExit("right", dirtRoad2);
+        dirtRoad1.setExit("up", housing);
+        dirtRoad1.setExit("left", city);
+
+        city.setExit("down", powerplant);
+        city.setExit("right", dirtRoad1);
+        city.setExit("up", townHall);
+        city.setExit("left", bank);
+
+        townHall.setExit("down", city);
+
+        powerplant.setExit("up", city);
+
+        bank.setExit("right", city);
 
         // Sets start room
         currentRoom = home;
