@@ -66,9 +66,7 @@ public class Game
         dirtRoad3.setExit("right",dirtRoad4);
         dirtRoad3.setExit("up",waterPlant);
         dirtRoad3.setExit("left", dirtRoad2);
-
         
-        set
         dirtRoad4.setExit("up", school);
         dirtRoad4.setExit("down", sportsFacility);
         dirtRoad4.setExit("left", dirtRoad3);
