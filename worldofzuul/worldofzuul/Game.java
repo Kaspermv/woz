@@ -48,6 +48,15 @@ public class Game
 
         dirtRoad1.setExit("down", home);
 
+        dirtRoad2.setExit("up", park);
+        dirtRoad2.setExit("down", hospital);
+        dirtRoad2.setExit("left", dirtRoad1);
+        dirtRoad2.setExit("right", dirtRoad3);
+
+        hospital.setExit("up", dirtRoad2);
+
+        park.setExit("down", dirtRoad2);
+
         // Sets start room
         currentRoom = home;
     }
