@@ -4,7 +4,8 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
-        
+    public int balance = 1000;
+    public int lifeQuality = 0;
 
     public Game() 
     {
@@ -16,31 +17,39 @@ public class Game
     private void createRooms()
     {
         // Declares all the rooms in the game
-        Room outside, theatre, pub, lab, office;
+        Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, city, bank, townHall, powerplant,
+                housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility;
 
         // Creates all the rooms, and sets their description.
-        outside = new Room("outside the main entrance of the university");
-        theatre = new Room("in a lecture theatre");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
+        home = new Room("in your home.");
+        dirtRoad1 = new Room("outside on a dirt road.");
+        dirtRoad2 = new Room("outside on a dirt road.")
+        dirtRoad3 = new Room("outside on a dirt road.")
+        dirtRoad4 = new Room("outside on a dirt road.")
+        city = new Room("in the big city.");
+        bank = new Room("in the bank.");
+        townHall = new Room("in the town hall, there is a terminal.");
+        powerplant = new Room("at the powerplant.");
+        housing = new Room("in the housing area.");
+        park = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a park.");
+        hospital = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a hospital.");
+        waterPlant = new Room("at the water plant.");
+        waterTreatmentPlant = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a water treatment plant.");
+        school = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a school.");
+        sportsFacility = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a sports facility.");
 
         // Sets all the exits for each room, by giving the direction to the room
-        outside.setExit("east", theatre);
-        outside.setExit("south", lab);
-        outside.setExit("west", pub);
+        home.setExit("up", dirtRoad1);
 
-        theatre.setExit("west", outside);
-
-        pub.setExit("east", outside);
-
-        lab.setExit("north", outside);
-        lab.setExit("east", office);
-
-        office.setExit("west", lab);
+        dirtRoad1.setExit("down", home);
 
         // Sets start room
-        currentRoom = outside;
+        currentRoom = home;
     }
 
     public void play() 
@@ -95,6 +104,16 @@ public class Game
         // The GO command calls the goRoom function, with the given command
         else if (commandWord == Action.GO) {
             goRoom(command);
+        }
+        else if (commandWord == Action.BUY){
+            if (command.hasSecondWord()){
+                // Buys item from vendor
+            } else{
+                // Buys room if the player has enough money and it isn't max level. NEEDS LIFEQUALITY CHECK
+                if (balance >= currentRoom.getPrice() && currentRoom.buyable()){
+                    currentRoom.buy();
+                }
+            }
         }
         // Sets the quit condition to true, if the correct quit command is the input
         else if (commandWord == Action.QUIT) {
