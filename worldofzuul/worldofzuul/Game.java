@@ -17,8 +17,8 @@ public class Game
     private void createRooms()
     {
         // Declares all the rooms in the game
-        Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, city, bank, townHall, powerplant,
-                housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility;
+        Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, townHall, powerplant, windmills,
+                housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
 
         // Creates all the rooms, and sets their description.
         home = new Room("in your home.");
@@ -26,6 +26,7 @@ public class Game
         dirtRoad2 = new Room("outside on a dirt road.");
         dirtRoad3 = new Room("outside on a dirt road.");
         dirtRoad4 = new Room("outside on a dirt road.");
+        dirtRoad5 = new Room("outside on a dirt road.");
         city = new Room("in the big city.");
         bank = new Room("in the bank.");
         townHall = new Room("in the town hall, there is a terminal.");
@@ -42,6 +43,11 @@ public class Game
                 "This would make a great spot for a school.");
         sportsFacility = new Room("on an empty plot of land.\n" +
                 "This would make a great spot for a sports facility.");
+        windmills = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for some windmills.");
+        market = new Room("on an empty plot of land.\n" +
+                "This would make a great spot for a market.");
+
 
         // Sets all the exits for each room, by giving the direction to the room
         home.setExit("up", dirtRoad1);
@@ -56,33 +62,48 @@ public class Game
         city.setExit("up", townHall);
         city.setExit("left", bank);
 
+        housing.setExit("down", dirtRoad1);
+
         townHall.setExit("down", city);
 
         powerplant.setExit("up", city);
 
         bank.setExit("right", city);
 
-        dirtRoad3.setExit("down",waterTreatmentPlant);
-        dirtRoad3.setExit("right",dirtRoad4);
-        dirtRoad3.setExit("up",waterPlant);
-        dirtRoad3.setExit("left", dirtRoad2);
-        
-        dirtRoad4.setExit("up", school);
-        dirtRoad4.setExit("down", sportsFacility);
-        dirtRoad4.setExit("left", dirtRoad3);
-        
-        school.setExit("down", dirtRoad4);
-
-        sportsFacility.setExit("up", dirtRoad4);
-
         dirtRoad2.setExit("up", park);
         dirtRoad2.setExit("down", hospital);
         dirtRoad2.setExit("left", dirtRoad1);
         dirtRoad2.setExit("right", dirtRoad3);
 
+        park.setExit("down", dirtRoad2);
+
         hospital.setExit("up", dirtRoad2);
 
-        park.setExit("down", dirtRoad2);
+        dirtRoad3.setExit("down", waterTreatmentPlant);
+        dirtRoad3.setExit("right", dirtRoad4);
+        dirtRoad3.setExit("up", waterPlant);
+        dirtRoad3.setExit("left", dirtRoad2);
+
+        waterTreatmentPlant.setExit("up", dirtRoad3);
+
+        waterPlant.setExit("down", dirtRoad3);
+
+        dirtRoad4.setExit("up", school);
+        dirtRoad4.setExit("down", sportsFacility);
+        dirtRoad4.setExit("left", dirtRoad3);
+        dirtRoad4.setExit("right", dirtRoad5);
+
+        sportsFacility.setExit("up", dirtRoad4);
+        
+        school.setExit("down", dirtRoad4);
+
+        dirtRoad5.setExit("up", market);
+        dirtRoad5.setExit("left", dirtRoad4);
+        dirtRoad5.setExit("down", windmills);
+
+        market.setExit("down", dirtRoad5);
+
+        windmills.setExit("up", dirtRoad5);
 
         // Sets start room
         currentRoom = home;
