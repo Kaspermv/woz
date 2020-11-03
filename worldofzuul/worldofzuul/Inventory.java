@@ -22,7 +22,7 @@ public class Inventory {
     public void toString(ArrayList<Item> inventory){
 
         for (Item item : inventory) {
-            System.out.println(item.toString() + "\n");
+            System.out.println(item.toString());
         }
     }
 }

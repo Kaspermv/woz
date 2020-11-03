@@ -231,7 +231,7 @@ public class Game
         if (command.hasSecondWord()){
             System.out.println("Status command doesn't take an argument");
         } else {
-            System.out.println("Balance: $" + getBalance() + " | Life quality: " + getLifeQuality() + " | Income: $" + getIncome() + " statuper days");
+            System.out.println("Balance: $" + getBalance() + " | Life quality: " + getLifeQuality() + " | Income: $" + getIncome() + " per day");
         }
     }
     // Returns true if the 'quit' command is given, and only contains that command
