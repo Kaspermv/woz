@@ -22,33 +22,32 @@ public class Game
                 housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
 
         // Creates all the rooms, and sets their description.
-        home = new Room("in your home.");
-        dirtRoad1 = new Room("outside on a dirt road.");
-        dirtRoad2 = new Room("outside on a dirt road.");
-        dirtRoad3 = new Room("outside on a dirt road.");
-        dirtRoad4 = new Room("outside on a dirt road.");
-        dirtRoad5 = new Room("outside on a dirt road.");
-        city = new Room("in the big city.");
-        bank = new Room("in the bank.");
-        townHall = new Room("in the town hall, there is a terminal.");
-        powerplant = new Room("at the powerplant.");
-        housing = new Room("in the housing area.");
+        home = new Room("in your home.", "in your home");
+        dirtRoad1 = new Room("outside on a dirt road.", "outside on an asphalt road");
+        dirtRoad2 = new Room("outside on a dirt road.", "outside on an asphalt road");
+        dirtRoad3 = new Room("outside on a dirt road.", "outside on an asphalt road");
+        dirtRoad4 = new Room("outside on a dirt road.", "outside on an asphalt road");
+        dirtRoad5 = new Room("outside on a dirt road.", "outside on an asphalt road");
+        city = new Room("in the big city.", "in the big city.");
+        bank = new Room("in the bank.", "in the bank.");
+        townHall = new Room("in the town hall, there is a terminal.", "in the town hall, there is a terminal.");
+        powerplant = new Room("at the powerplant.", "at the powerplant.");
+        housing = new Room("in the housing area.", "in the housing area.");
         park = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a park.");
+                "This would make a great spot for a park.", "at the park.");
         hospital = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a hospital.");
-        waterPlant = new Room("at the water plant.");
+                "This would make a great spot for a hospital.", "at the hospital");
+        waterPlant = new Room("at the water plant.", "at the water plant.");
         waterTreatmentPlant = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a water treatment plant.");
+                "This would make a great spot for a water treatment plant.", "at the water treatment plant");
         school = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a school.");
+                "This would make a great spot for a school.", "at the school");
         sportsFacility = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a sports facility.");
+                "This would make a great spot for a sports facility.", "at the sports facility");
         windmills = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for some windmills.");
+                "This would make a great spot for some windmills.", "at the windmill park");
         market = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a market.");
-
+                "This would make a great spot for a market.", "at the market");
 
         // Sets all the exits for each room, by giving the direction to the room
         home.setExit("up", dirtRoad1);
@@ -105,6 +104,70 @@ public class Game
         market.setExit("down", dirtRoad5);
 
         windmills.setExit("up", dirtRoad5);
+
+        // Setting prices and other values
+
+        dirtRoad1.setMaxLevel(1);
+        dirtRoad1.setQualityPerLevel(10);
+
+        dirtRoad2.setMaxLevel(1);
+        dirtRoad2.setQualityPerLevel(10);
+
+        dirtRoad3.setMaxLevel(1);
+        dirtRoad3.setQualityPerLevel(10);
+
+        dirtRoad4.setMaxLevel(1);
+        dirtRoad4.setQualityPerLevel(10);
+
+        dirtRoad5.setMaxLevel(1);
+        dirtRoad5.setQualityPerLevel(10);
+
+        powerplant.setMaxLevel(5);
+        powerplant.setCurrentLevel(1);
+        powerplant.setPricePerLevel(100);
+        powerplant.setPayPerLevel(30);
+
+        housing.setMaxLevel(5);
+        housing.setCurrentLevel(1);
+        housing.setPricePerLevel(75);
+        housing.setQualityPerLevel(50);
+        housing.setPayPerLevel(50);
+
+        park.setMaxLevel(1);
+        park.setPricePerLevel(175);
+        park.setQualityPerLevel(100);
+
+        hospital.setMaxLevel(1);
+        hospital.setPricePerLevel(300);
+        hospital.setQualityPerLevel(150);
+        hospital.setPayPerLevel(150);
+
+        waterPlant.setMaxLevel(4);
+        waterPlant.setCurrentLevel(1);
+        waterPlant.setPricePerLevel(100);
+        waterPlant.setQualityPerLevel(20);
+
+        waterTreatmentPlant.setMaxLevel(1);
+        waterTreatmentPlant.setPricePerLevel(150);
+        waterTreatmentPlant.setQualityPerLevel(60);
+
+        school.setMaxLevel(4);
+        school.setQualityPerLevel(75);
+        school.setPricePerLevel(125);
+
+        sportsFacility.setMaxLevel(1);
+        sportsFacility.setPricePerLevel(325);
+        sportsFacility.setQualityPerLevel(400);
+
+        windmills.setMaxLevel(3);
+        windmills.setPricePerLevel(100);
+        windmills.setPayPerLevel(50);
+        windmills.setQualityPerLevel(20);
+
+        market.setMaxLevel(3);
+        market.setPayPerLevel(125);
+        market.setPricePerLevel(150);
+        market.setQualityPerLevel(50);
 
         // Sets start room
         currentRoom = home;
