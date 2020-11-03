@@ -9,13 +9,16 @@ public class Room
 {
     // This is the description for displaying where the player is, e.g. "in the bedroom".
     private String description;
+    private String secondDescription;
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
     private HashMap<String, Room> exits;
 
-    private int currentLevel = 1, maxLevel = 1;
-    private int price;
+    private int currentLevel = 0, maxLevel = 0;
+    private int pricePerLevel;
+    private int qualityPerLevel;
+    private int payPerLevel;
 
-    public Room(String description)
+    public Room(String description, String secondDescription)
     {
         this.description = description;
         exits = new HashMap<String, Room>();
@@ -26,22 +29,49 @@ public class Room
         return (currentLevel < maxLevel);
     }
 
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
     public void buy() throws Exception{
         if (!buyable()) {
             throw new Exception("Unable to buy/upgrade");
         }
+
         currentLevel++;
     }
 
-    // Getters and setters for currentLevel and maxLevel
+    // Getters and setters for values
+
+
+    public int getPayPerLevel() {
+        return payPerLevel;
+    }
+
+    public void setPayPerLevel(int payPerLevel) {
+        this.payPerLevel = payPerLevel;
+    }
+
+    public int getQuality() {
+        return qualityPerLevel*currentLevel;
+    }
+
+    public int getQualityPerLevel() {
+        return qualityPerLevel;
+    }
+
+    public void setQualityPerLevel(int qualityPerLevel) {
+        this.qualityPerLevel = qualityPerLevel;
+    }
+
+    public void setPricePerLevel(int price) {
+        this.pricePerLevel = price;
+    }
+
+    public int getPrice(){
+        return pricePerLevel;
+    }
+
+    public int getPricePerLevel() {
+        return pricePerLevel;
+    }
+
     public int getCurrentLevel() {
         return currentLevel;
     }
@@ -67,7 +97,11 @@ public class Room
 
     public String getShortDescription()
     {
-        return description;
+        if (currentLevel == 0) {
+            return description;
+        } else {
+            return secondDescription + " Level: " + currentLevel;
+        }
     }
 
     // Returns a string on two lines, that says where the player is, and the exits available.
