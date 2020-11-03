@@ -133,8 +133,8 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to the World of Zuul!");
-        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Welcome to the World of Slum!");
+        System.out.println("World of Slum is a new, learning adventure game.");
         System.out.println("Type '" + Action.HELP + "' if you need help.");
         System.out.println();
         // Gives the initial message of where the player is at game start
@@ -213,10 +213,10 @@ public class Game
         // Stores the room object that was pointed to with a direction, in the command
         Room nextRoom = currentRoom.getExit(direction);
 
-        // If there is no room in the given direction, or that direction isn't set as an exit, the player doesn't move
+        // If there is no road in the given direction, or that direction isn't set as an exit, the player doesn't move
         if (nextRoom == null) {
             // Should be sent to the GUI
-            System.out.println("There is no door!");
+            System.out.println("This is a dead end!");
         }
         else {
             // Changes the current that the player is in, and displays the new current room and exits
