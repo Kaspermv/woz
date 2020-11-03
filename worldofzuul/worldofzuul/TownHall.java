@@ -6,4 +6,6 @@ public class TownHall extends Room{
         super(description, secondDescription);
 
     }
+
+    
 }
