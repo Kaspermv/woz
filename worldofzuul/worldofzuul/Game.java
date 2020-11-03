@@ -6,6 +6,7 @@ public class Game
     private Room currentRoom;
     public int balance = 1000;
     public int lifeQuality = 0;
+    public int income = 0;
 
     public Game() 
     {
@@ -165,13 +166,21 @@ public class Game
         else if (commandWord == Action.BUY){
             if (command.hasSecondWord()){
                 // Buys item from vendor
-            } else{
+            } else if (balance >= currentRoom.getPrice() && currentRoom.buyable()){
                 // Buys room if the player has enough money and it isn't max level. NEEDS LIFEQUALITY CHECK
-                if (balance >= currentRoom.getPrice() && currentRoom.buyable()){
+                try {
                     currentRoom.buy();
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
+            } else {
+                System.out.println("Nothing was bought");
             }
         }
+        else if (commandWord == Action.STATUS){
+            printStatus(command);
+        }
+
         // Sets the quit condition to true, if the correct quit command is the input
         else if (commandWord == Action.QUIT) {
             wantToQuit = quit(command);
@@ -182,10 +191,11 @@ public class Game
     private void printHelp() 
     {
         // All this should be sent through the GUI in the future
-        System.out.println("You are lost. You are alone. You wander");
-        System.out.println("around at the university.");
+        System.out.println("You are drunk");
+        System.out.println("You don't know what to do");
+        System.out.println("You are " + currentRoom.getShortDescription());
         System.out.println();
-        System.out.println("Your command words are:");
+        System.out.println("Your available command words are:");
         // This shows the available commands, 'go', 'help' and so on
         parser.showCommands();
     }
@@ -215,6 +225,15 @@ public class Game
             System.out.println(currentRoom.getLongDescription());
         }
     }
+
+
+    public void printStatus (Command command){
+        if (command.hasSecondWord()){
+            System.out.println("Status command doesn't take an argument");
+        } else {
+            System.out.println("Balance: $" + getBalance() + " | Life quality: " + getLifeQuality() + " | Income: $" + getIncome() + " statuper days");
+        }
+    }
     // Returns true if the 'quit' command is given, and only contains that command
     private boolean quit(Command command) 
     {
@@ -225,5 +244,17 @@ public class Game
         else {
             return true;
         }
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public int getIncome() {
+        return income;
+    }
+
+    public int getLifeQuality() {
+        return lifeQuality;
     }
 }
