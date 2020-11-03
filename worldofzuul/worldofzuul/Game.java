@@ -7,9 +7,12 @@ public class Game
     public int balance = 1000;
     public int lifeQuality = 0;
     public int income = 0;
+    public Inventory inventory;
 
     public Game() 
     {
+        inventory = new Inventory();
+        inventory.addItem(new Item("Nicho","Student", 10));
         createRooms();
         parser = new Parser();
     }
@@ -242,6 +245,14 @@ public class Game
         }
         else if (commandWord == Action.STATUS){
             printStatus(command);
+        }
+
+        else if (commandWord == Action.INVENTORY){
+            if (!inventory.isEmpty()) {
+                System.out.println(inventory.toString());
+            } else{
+                System.out.println("Inventory is empty.");
+            }
         }
 
         // Sets the quit condition to true, if the correct quit command is the input

@@ -19,10 +19,19 @@ public class Inventory {
         inventory.remove(item);
     }
 
-    public void toString(ArrayList<Item> inventory){
-
-        for (Item item : inventory) {
-            System.out.println(item.toString());
+    public Boolean isEmpty(){
+        if (inventory.size() == 0){
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public String toString(){
+        String value = "";
+        for (Item item : inventory) {
+            value += item.toString() + "\n";
+        }
+        return value;
     }
 }
