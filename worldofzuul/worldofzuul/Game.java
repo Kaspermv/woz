@@ -166,11 +166,15 @@ public class Game
         else if (commandWord == Action.BUY){
             if (command.hasSecondWord()){
                 // Buys item from vendor
-            } else{
+            } else if (balance >= currentRoom.getPrice() && currentRoom.buyable()){
                 // Buys room if the player has enough money and it isn't max level. NEEDS LIFEQUALITY CHECK
-                if (balance >= currentRoom.getPrice() && currentRoom.buyable()){
+                try {
                     currentRoom.buy();
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
+            } else {
+                System.out.println("Nothing was bought");
             }
         }
         else if (commandWord == Action.STATUS){

@@ -34,7 +34,10 @@ public class Room
         return price;
     }
 
-    public void buy(){
+    public void buy() throws Exception{
+        if (!buyable()) {
+            throw new Exception("Unable to buy/upgrade");
+        }
         currentLevel++;
     }
 
