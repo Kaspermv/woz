@@ -87,9 +87,16 @@ public class Room
         exits.put(direction, neighbor);
     }
 
+    public void setCurrentLevel(int currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+
     public String getDescription() {
-        if (!hasPrice) {
+        if (!hasPrice && currentLevel != maxLevel) {
             return "You are " + description + "\n"
+                    + getExitString();
+        }else  if (!hasPrice && currentLevel == maxLevel) {
+            return "You are " + secondDescription + "\n"
                     +getExitString();
         } else if (currentLevel == 0) {
             return "You are " + description + " Level: " + currentLevel + "/" + maxLevel + ".\n"

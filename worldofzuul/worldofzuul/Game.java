@@ -250,13 +250,17 @@ public class Game
                     System.out.println("No item by that name.");
                     return false;
                 }
-                inventory.addItem(item);
-                townHall.inventory.removeItem(item);
+                if (balance > item.getPrice()) {
+                    inventory.addItem(item);
+                    townHall.inventory.removeItem(item);
+                    canSleep = true;
+                    balance -= item.getPrice();
 
-                System.out.println("You can buy these items to upgrade your town:");
-                System.out.println(townHall.toString());
-                System.out.println("To buy an item, type BUY and the name of the item.");
-
+                    System.out.println("You bought the item");
+                    System.out.println("You can buy these items to upgrade your town:");
+                    System.out.println(townHall.toString());
+                    System.out.println("To buy an item, type BUY and the name of the item.");
+                }
             } else if (balance >= currentRoom.getPrice() && currentRoom.buyable(lifeQuality) && !command.hasSecondWord()){
                 // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
                 balance -= currentRoom.getPrice();
@@ -264,6 +268,7 @@ public class Game
                 lifeQuality += currentRoom.getQualityPerLevel();
 
                 currentRoom.buy();
+                canSleep = true;
                 System.out.println(currentRoom.getDescription());
             } else {
                 System.out.println("Nothing was bought");
@@ -287,16 +292,44 @@ public class Game
             } else
             {
                 if (currentRoom == home) {
-                    //go to sleep
-                    System.out.println("Going to sleep");
-                    balance += getIncome();
-                    day++;
-                    System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + balance);
+                    if (canSleep) {
+                        //go to sleep
+                        System.out.println("Going to sleep");
+                        balance += getIncome();
+                        day++;
+                        System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + balance);
+                        canSleep = false;
+                    } else {
+                        System.out.println("You are not tired. Go do something.");
+                    }
                 } else {
                     System.out.println("You can't sleep here");
                 }
             }
+        } else if (commandWord == Action.USE){
+            if (command.hasSecondWord()){
+                if (currentRoom == dirtRoad1 || currentRoom == dirtRoad2 || currentRoom == dirtRoad3 || currentRoom == dirtRoad4 || currentRoom == dirtRoad5) {
+                    // Upgrades a dirt road, using an item
+                    Item item = inventory.getItem(command.getSecondWord());
+                    if (item == null) {
+                        System.out.println("No item by that name.");
+                        return false;
+                    }
+                    inventory.removeItem(item);
+                    canSleep = true;
+
+                    currentRoom.setCurrentLevel(1);
+                    lifeQuality += currentRoom.getQuality();
+                    System.out.println("You upgraded the road.");
+                    System.out.println(currentRoom.getDescription());
+                } else{
+                    System.out.println("You can't use that here.");
+                }
+            } else {
+                System.out.println("You cant do that.");
+            }
         }
+
 
         // Sets the quit condition to true, if the correct quit command is the input
         else if (commandWord == Action.QUIT) {
