@@ -30,7 +30,7 @@ public class Room
 
     // Returns true if this room can be bought/upgraded
     public Boolean buyable(int quality){
-        return (currentLevel < maxLevel && quality > getQualityRequirement());
+        return (currentLevel < maxLevel && quality > getQualityRequirement() && hasPrice);
     }
 
     public void buy(){

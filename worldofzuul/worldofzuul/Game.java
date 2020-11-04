@@ -9,10 +9,15 @@ public class Game
     public int income = 0;
     public Inventory inventory;
 
+    // Declares all the rooms in the game
+    public Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, powerplant, windmills,
+            housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
+
+    public TownHall townHall;
+
     public Game() 
     {
         inventory = new Inventory();
-        inventory.addItem(new Item("Nicho","Student", 10));
         createRooms();
         parser = new Parser();
     }
@@ -20,9 +25,7 @@ public class Game
 
     private void createRooms()
     {
-        // Declares all the rooms in the game
-        Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, townHall, powerplant, windmills,
-                housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
+
 
         // Creates all the rooms, and sets their description.
         home = new Room("in your home.", "in your home", false);
@@ -33,7 +36,7 @@ public class Game
         dirtRoad5 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
         city = new Room("in the big city.", "in the big city.", false);
         bank = new Room("in the bank.", "in the bank.", false);
-        townHall = new Room("in the town hall, there is a terminal.", "in the town hall, there is a terminal.", false);
+        townHall = new TownHall("in the town hall.", "in the town hall.", false);
         powerplant = new Room("on an empty plot of land.\n" +
                 "This would make a great spot for a powerplant.", "at the powerplant.", true);
         housing = new Room("in the housing area.", "in the housing area.", true);
@@ -236,9 +239,21 @@ public class Game
             goRoom(command);
         }
         else if (commandWord == Action.BUY){
-            if (command.hasSecondWord()){
+            if (command.hasSecondWord() && currentRoom == townHall){
                 // Buys item from vendor
-            } else if (balance >= currentRoom.getPrice() && currentRoom.buyable(lifeQuality)){
+                Item item = townHall.inventory.getItem(command.getSecondWord());
+                if (item == null){
+                    System.out.println("No item by that name.");
+                    return false;
+                }
+                inventory.addItem(item);
+                townHall.inventory.removeItem(item);
+
+                System.out.println("You can buy these items to upgrade your town:");
+                System.out.println(townHall.toString());
+                System.out.println("To buy an item, type BUY and the name of the item.");
+
+            } else if (balance >= currentRoom.getPrice() && currentRoom.buyable(lifeQuality) && !command.hasSecondWord()){
                 // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
                 balance -= currentRoom.getPrice();
                 income += currentRoom.getPayPerLevel();
@@ -302,6 +317,12 @@ public class Game
             currentRoom = nextRoom;
             // Should be sent to the GUI
             System.out.println(currentRoom.getDescription());
+            if (currentRoom == townHall){
+                System.out.println();
+                System.out.println("You can buy these items to upgrade your town:");
+                System.out.println(townHall.toString());
+                System.out.println("To buy an item, type BUY and the name of the item.");
+            }
         }
     }
 

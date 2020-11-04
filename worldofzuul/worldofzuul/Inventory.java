@@ -4,23 +4,32 @@ import java.util.ArrayList;
 
 public class Inventory {
 
-    private ArrayList<Item> inventory;
+    private ArrayList<Item> inventoryList;
 
 
     public Inventory() {
-        inventory = new ArrayList<Item>();
+        inventoryList = new ArrayList<Item>();
     }
 
     public void addItem(Item item) {
-        inventory.add(item);
+        inventoryList.add(item);
     }
 
     public void removeItem(Item item) {
-        inventory.remove(item);
+        inventoryList.remove(item);
+    }
+
+    public Item getItem(String name) {
+        for (Item item : inventoryList){
+            if (item.getName().equals(name)){
+                return item;
+            }
+        }
+        return null;
     }
 
     public Boolean isEmpty(){
-        if (inventory.size() == 0){
+        if (inventoryList.size() == 0){
             return true;
         }
         return false;
@@ -29,7 +38,7 @@ public class Inventory {
     @Override
     public String toString(){
         String value = "";
-        for (Item item : inventory) {
+        for (Item item : inventoryList) {
             value += item.toString() + "\n";
         }
         return value;
