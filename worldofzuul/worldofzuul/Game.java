@@ -1,13 +1,22 @@
 package worldofzuul;
 
-public class Game 
+import java.sql.SQLOutput;
+
+public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private boolean canSleep = false;
     public int balance = 1000;
     public int lifeQuality = 0;
     public int income = 0;
     public Inventory inventory;
+    public int day = 0;
+
+
+    Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, townHall, powerplant, windmills,
+            housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
+
 
     public Game() 
     {
@@ -21,8 +30,6 @@ public class Game
     private void createRooms()
     {
         // Declares all the rooms in the game
-        Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, townHall, powerplant, windmills,
-                housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
 
         // Creates all the rooms, and sets their description.
         home = new Room("in your home.", "in your home");
@@ -255,6 +262,23 @@ public class Game
             }
         }
 
+        else if (commandWord == Action.SLEEP){
+            if (command.hasSecondWord()) {
+                System.out.println("Sleep command doesn't take a second argument");
+            } else
+            {
+                if (currentRoom == home) {
+                    //go to sleep
+                    System.out.println("Going to sleep");
+                    balance += getIncome();
+                    day++;
+                    System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + balance);
+                } else {
+                    System.out.println("You can't sleep here");
+                }
+            }
+        }
+
         // Sets the quit condition to true, if the correct quit command is the input
         else if (commandWord == Action.QUIT) {
             wantToQuit = quit(command);
@@ -331,4 +355,5 @@ public class Game
     public int getLifeQuality() {
         return lifeQuality;
     }
+
 }

@@ -6,7 +6,7 @@ public enum Action
 
     // This is the Enum object that is all the different actions or commands the player can use. There will be more, with the more features that are added
     GO("go"), BUY("buy"), QUIT("quit"), HELP("help"), UNKNOWN("?"),
-    STATUS("status"),INVENTORY("inventory");
+    STATUS("status"),INVENTORY("inventory"), SLEEP("sleep");
     // This holds the individual string version of the Enum, "go", "help" etc.
     private String actionString;
 
