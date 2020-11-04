@@ -17,23 +17,23 @@ public class Room
     private int pricePerLevel;
     private int qualityPerLevel;
     private int payPerLevel;
+    private int qualityRequirementPerLevel = 0;
+    private boolean hasPrice;
 
-    public Room(String description, String secondDescription)
+    public Room(String description, String secondDescription, boolean hasPrice)
     {
         this.description = description;
+        this.secondDescription = secondDescription;
+        this.hasPrice = hasPrice;
         exits = new HashMap<String, Room>();
     }
 
     // Returns true if this room can be bought/upgraded
-    public Boolean buyable(){
-        return (currentLevel < maxLevel);
+    public Boolean buyable(int quality){
+        return (currentLevel < maxLevel && quality > getQualityRequirement() && hasPrice);
     }
 
-    public void buy() throws Exception{
-        if (!buyable()) {
-            throw new Exception("Unable to buy/upgrade");
-        }
-
+    public void buy(){
         currentLevel++;
     }
 
@@ -68,24 +68,16 @@ public class Room
         return pricePerLevel;
     }
 
-    public int getPricePerLevel() {
-        return pricePerLevel;
-    }
-
-    public int getCurrentLevel() {
-        return currentLevel;
-    }
-
-    public int getMaxLevel() {
-        return maxLevel;
-    }
-
-    public void setCurrentLevel(int currentLevel) {
-        this.currentLevel = currentLevel;
-    }
-
     public void setMaxLevel(int maxLevel) {
         this.maxLevel = maxLevel;
+    }
+
+    public void setQualityRequirementPerLevel(int qualityRequirementPerLevel) {
+        this.qualityRequirementPerLevel = qualityRequirementPerLevel;
+    }
+
+    public int getQualityRequirement() {
+        return qualityRequirementPerLevel * currentLevel;
     }
 
     // This is used on game startup, for setting the exit(s) of the reffered room.
@@ -95,19 +87,27 @@ public class Room
         exits.put(direction, neighbor);
     }
 
-    public String getShortDescription()
-    {
-        if (currentLevel == 0) {
-            return description;
+    public String getDescription() {
+        if (!hasPrice) {
+            return "You are " + description + "\n"
+                    +getExitString();
+        } else if (currentLevel == 0) {
+            return "You are " + description + " Level: " + currentLevel + "/" + maxLevel + ".\n"
+                    + "Price: " + getPrice() + ".\n"
+                    + "Lifequality required: " + getQualityRequirement() + ".\n"
+                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
+                    + getExitString();
+        } else if (currentLevel != maxLevel) {
+            return "You are " + secondDescription + " Level: " + currentLevel + "/" + maxLevel + ".\n"
+                    + "Price: " + getPrice() + ".\n"
+                    + "Lifequality required: " + getQualityRequirement() + ".\n"
+                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
+                    + getExitString();
         } else {
-            return secondDescription + " Level: " + currentLevel;
+            return "You are " + secondDescription + " Level: " + currentLevel + "/" + maxLevel + ".\n"
+                    + "Current revenue: " + getPayPerLevel() * currentLevel
+                    + getExitString();
         }
-    }
-
-    // Returns a string on two lines, that says where the player is, and the exits available.
-    public String getLongDescription()
-    {
-        return "You are " + description + ".\n" + getExitString();
     }
 
     // Returns a string that consists of all the exits from the room.

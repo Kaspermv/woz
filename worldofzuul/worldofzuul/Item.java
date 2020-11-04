@@ -13,8 +13,7 @@ public class Item {
 
     @Override
     public String toString() {
-        return
-                name + ". " + description + ". Price: $" + price;
+        return "Name: " + name + ". Description: " + description + ". Price: $" + price;
     }
 
     public String getName(){
