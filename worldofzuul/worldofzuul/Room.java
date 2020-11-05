@@ -35,6 +35,9 @@ public class Room
 
     public void buy(){
         currentLevel++;
+        if (currentLevel == maxLevel) {
+            Game.roomsFinished++;
+        }
     }
 
     // Getters and setters for values
@@ -118,7 +121,7 @@ public class Room
     }
 
     // Returns a string that consists of all the exits from the room.
-    private String getExitString()
+    public String getExitString()
     {
         String returnString = "Exits:";
         Set<String> keys = exits.keySet();

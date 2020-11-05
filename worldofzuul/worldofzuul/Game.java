@@ -1,5 +1,7 @@
 package worldofzuul;
 
+import com.sun.security.jgss.GSSUtil;
+
 import java.sql.SQLOutput;
 
 public class Game
@@ -12,6 +14,7 @@ public class Game
     public int income = 0;
     public Inventory inventory;
     public int day = 0;
+    public static int roomsFinished = 0;
 
     // Declares all the rooms in the game
     public Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, powerplant, windmills,
@@ -203,9 +206,14 @@ public class Game
             Command command = parser.getCommand();
             // This is the game itself, that returns true if the game is completed
             finished = processCommand(command);
+            if (roomsFinished == 15) {
+                System.out.println("Congratulations - you won");
+                System.out.println("It took you " + day + " days");
+                finished = true;
+            }
         }
         // If the game is over, this message shows
-        System.out.println("Thank you for playing.  Good bye.");
+        System.out.println("Thank you for playing.  Goodbye.");
     }
 
     // Prints a welcome message and shows the 'help' command
@@ -214,6 +222,9 @@ public class Game
         System.out.println();
         System.out.println("Welcome to the World of Slum!");
         System.out.println("World of Slum is a new, learning adventure game.");
+        System.out.println("The goal is to upgrade all places to their max level in the fewest amount of days.");
+        System.out.println("You have a bit of money from the start which you can use to buy upgrades and items.");
+        System.out.println("Some upgrades requires you to have gained some amount of life quality for your town in order to be able to buy them.");
         System.out.println("Type '" + Action.HELP + "' if you need help.");
         System.out.println();
         // Gives the initial message of where the player is at game start
@@ -236,7 +247,35 @@ public class Game
         }
         // The help command
         if (commandWord == Action.HELP) {
-            printHelp();
+            if (command.hasSecondWord()) {
+                switch (command.getSecondWord()) {
+                    case "go":
+                        System.out.println("Type go followed by one of the available directions to move through the map. ex: \"go up\"");
+                        System.out.println(currentRoom.getExitString());
+                        break;
+                    case "buy":
+                        System.out.println("Type buy followed by the name of the item you want to purchase. ex: \"buy Road-upgrade\"");
+                        System.out.println("Hint: items can be bought at the town hall");
+                        break;
+                    case "quit":
+                        System.out.println("Type quit to exit the game - your progress will be lost");
+                        break;
+                    case "sleep":
+                        System.out.println("Type sleep to let a day go by - this pays out your daily income");
+                        System.out.println("You can only sleep at home");
+                        break;
+                    case "use":
+                        System.out.println("Type use followed by the name of the item you want to use");
+                        System.out.println("Items can only be used in specific rooms");
+                        break;
+                    case "status":
+                        System.out.println("Type status to check your balance, life quality and current income");
+                        break;
+                    default:
+                        System.out.println("Thats not a viable command");
+                }
+            } else { printHelp(); }
+
         }
         // The GO command calls the goRoom function, with the given command
         else if (commandWord == Action.GO) {
@@ -318,7 +357,7 @@ public class Game
                     inventory.removeItem(item);
                     canSleep = true;
 
-                    currentRoom.setCurrentLevel(1);
+                    currentRoom.buy();
                     lifeQuality += currentRoom.getQuality();
                     System.out.println("You upgraded the road.");
                     System.out.println(currentRoom.getDescription());
@@ -346,6 +385,8 @@ public class Game
         System.out.println("Your available command words are:");
         // This shows the available commands, 'go', 'help' and so on
         parser.showCommands();
+        System.out.println();
+        System.out.println("To get more info on a specific command, type help followed by the command. ex: \"help use\"");
     }
     // The function that moves the player, given a valid command
     private void goRoom(Command command) 
