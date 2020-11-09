@@ -422,7 +422,7 @@ public class Game
     }
 
 
-    public void printStatus (Command command){
+    private void printStatus (Command command){
         if (command.hasSecondWord()){
             System.out.println("Status command doesn't take an argument");
         } else {
