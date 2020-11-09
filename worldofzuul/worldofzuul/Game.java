@@ -195,7 +195,6 @@ public class Game
 
     public void play() 
     {
-        System.out.println(Action.GO.toString());
         // Prints the welcome message
         printWelcome();
 
@@ -221,7 +220,6 @@ public class Game
     // Prints a welcome message and shows the 'help' command
     private void printWelcome()
     {
-        System.out.println();
         System.out.println("Welcome to the World of Slum!");
         System.out.println("World of Slum is a new, learning adventure game.");
         System.out.println("The goal is to upgrade all places to their max level in the fewest amount of days.");
