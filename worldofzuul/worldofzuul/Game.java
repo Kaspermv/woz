@@ -194,6 +194,7 @@ public class Game
 
     public void play() 
     {
+        System.out.println(Action.GO.toString());
         // Prints the welcome message
         printWelcome();
 
