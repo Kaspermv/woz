@@ -15,6 +15,7 @@ public class Game
     public Inventory inventory;
     public int day = 0;
     public static int roomsFinished = 0;
+    private int roomsToFinish = 15;
 
     // Declares all the rooms in the game
     public Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, powerplant, windmills,
@@ -207,7 +208,7 @@ public class Game
             Command command = parser.getCommand();
             // This is the game itself, that returns true if the game is completed
             finished = processCommand(command);
-            if (roomsFinished == 15) {
+            if (roomsFinished == roomsToFinish) {
                 System.out.println("Congratulations - you won");
                 System.out.println("It took you " + day + " days");
                 finished = true;
