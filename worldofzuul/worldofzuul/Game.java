@@ -6,13 +6,9 @@ import java.sql.SQLOutput;
 
 public class Game
 {
+    Player player = new Player();
     private Parser parser;
     private Room currentRoom;
-    private boolean canSleep = false;
-    public int balance = 1000;
-    public int lifeQuality = 100;
-    public int income = 0;
-    public Inventory inventory;
     public int day = 0;
     public static int roomsFinished = 0;
     private int roomsToFinish = 15;
@@ -25,7 +21,6 @@ public class Game
 
     public Game() 
     {
-        inventory = new Inventory();
         createRooms();
         parser = new Parser();
     }
@@ -289,25 +284,25 @@ public class Game
                     System.out.println("No item by that name.");
                     return false;
                 }
-                if (balance > item.getPrice()) {
-                    inventory.addItem(item);
+                if (player.getBalance() > item.getPrice()) {
+                    player.inventory.addItem(item);
                     townHall.inventory.removeItem(item);
-                    canSleep = true;
-                    balance -= item.getPrice();
+                    player.setCanSleep(true);
+                    player.setBalance(player.getBalance() - item.getPrice());
 
                     System.out.println("You bought the item");
                     System.out.println("You can buy these items to upgrade your town:");
                     System.out.println(townHall.toString());
                     System.out.println("To buy an item, type BUY and the name of the item.");
                 }
-            } else if (balance >= currentRoom.getPrice() && currentRoom.buyable(lifeQuality) && !command.hasSecondWord()){
+            } else if (player.getBalance() >= currentRoom.getPrice() && currentRoom.buyable(player.getLifeQuality()) && !command.hasSecondWord()){
                 // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
-                balance -= currentRoom.getPrice();
-                income += currentRoom.getPayPerLevel();
-                lifeQuality += currentRoom.getQualityPerLevel();
+                player.setBalance(player.getBalance() - currentRoom.getPrice());
+                player.setIncome(player.getIncome() + currentRoom.getPayPerLevel());
+                player.setLifeQuality(player.getLifeQuality() + currentRoom.getQualityPerLevel());
 
                 currentRoom.buy();
-                canSleep = true;
+                player.setCanSleep(true);
                 System.out.println(currentRoom.getDescription());
             } else {
                 System.out.println("Nothing was bought");
@@ -318,8 +313,8 @@ public class Game
         }
 
         else if (commandWord == Action.INVENTORY){
-            if (!inventory.isEmpty()) {
-                System.out.println(inventory.toString());
+            if (!player.inventory.isEmpty()) {
+                System.out.println(player.inventory.toString());
             } else{
                 System.out.println("Inventory is empty.");
             }
@@ -331,13 +326,13 @@ public class Game
             } else
             {
                 if (currentRoom == home) {
-                    if (canSleep) {
+                    if (player.isCanSleep()) {
                         //go to sleep
                         System.out.println("Going to sleep");
-                        balance += getIncome();
+                        player.setBalance(player.getBalance() + player.getIncome());
                         day++;
-                        System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + balance);
-                        canSleep = false;
+                        System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + player.getBalance());
+                        player.setCanSleep(false);
                     } else {
                         System.out.println("You are not tired. Go do something.");
                     }
@@ -349,16 +344,16 @@ public class Game
             if (command.hasSecondWord()){
                 if (currentRoom == dirtRoad1 || currentRoom == dirtRoad2 || currentRoom == dirtRoad3 || currentRoom == dirtRoad4 || currentRoom == dirtRoad5) {
                     // Upgrades a dirt road, using an item
-                    Item item = inventory.getItem(command.getSecondWord());
+                    Item item = player.inventory.getItem(command.getSecondWord());
                     if (item == null) {
                         System.out.println("No item by that name.");
                         return false;
                     }
-                    inventory.removeItem(item);
-                    canSleep = true;
+                    player.inventory.removeItem(item);
+                    player.setCanSleep(true);
 
                     currentRoom.buy();
-                    lifeQuality += currentRoom.getQuality();
+                    player.lifeQuality += currentRoom.getQuality();
                     System.out.println("You upgraded the road.");
                     System.out.println(currentRoom.getDescription());
                 } else{
@@ -426,7 +421,7 @@ public class Game
         if (command.hasSecondWord()){
             System.out.println("Status command doesn't take an argument");
         } else {
-            System.out.println("Balance: $" + getBalance() + " | Life quality: " + getLifeQuality() + " | Income: $" + getIncome() + " per day");
+            System.out.println("Balance: $" + player.getBalance() + " | Life quality: " + player.getLifeQuality() + " | Income: $" + player.getIncome() + " per day");
         }
     }
     // Returns true if the 'quit' command is given, and only contains that command
@@ -441,16 +436,6 @@ public class Game
         }
     }
 
-    public int getBalance() {
-        return balance;
-    }
 
-    public int getIncome() {
-        return income;
-    }
-
-    public int getLifeQuality() {
-        return lifeQuality;
-    }
 
 }
