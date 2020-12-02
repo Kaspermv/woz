@@ -8,7 +8,7 @@ public class Game
 {
     PlayerState player = new PlayerState();
     private Parser parser;
-    private Room currentRoom;
+    public Room currentRoom;
     public int day = 0;
     public static int roomsFinished = 0;
     private int roomsToFinish = 15;
@@ -31,34 +31,34 @@ public class Game
 
 
         // Creates all the rooms, and sets their description.
-        home = new Room("in your home.", "in your home", false);
-        dirtRoad1 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
-        dirtRoad2 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
-        dirtRoad3 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
-        dirtRoad4 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
-        dirtRoad5 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
-        city = new Room("in the big city.", "in the big city.", false);
-        bank = new Room("in the bank.", "in the bank.", false);
-        townHall = new TownHall("in the town hall.", "in the town hall.", false);
-        powerplant = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a powerplant.", "at the powerplant.", true);
-        housing = new Room("in the housing area.", "in the housing area.", true);
-        park = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a park.", "at the park.", true);
-        hospital = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a hospital.", "at the hospital", true);
-        waterPlant = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a waterplant.", "at the water plant.", true);
-        waterTreatmentPlant = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a water treatment plant.", "at the water treatment plant", true);
-        school = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a school.", "at the school", true);
-        sportsFacility = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a sports facility.", "at the sports facility", true);
-        windmills = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for some windmills.", "at the windmill park", true);
-        market = new Room("on an empty plot of land.\n" +
-                "This would make a great spot for a market.", "at the market", true);
+        home = new Room("Home","in your home.", "in your home", false, "up");
+        dirtRoad1 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad2 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad3 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad4 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad5 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        city = new Room("City","in the big city.", "in the big city.", false, "all");
+        bank = new Room("Bank","in the bank.", "in the bank.", false, "right");
+        townHall = new TownHall("Town hall","in the town hall.", "in the town hall.", false, "down");
+        powerplant = new Room("Powerplant", "on an empty plot of land.\n" +
+                "This would make a great spot for a powerplant.", "at the powerplant.", true, "up");
+        housing = new Room("Housing","in the housing area.", "in the housing area.", true, "down");
+        park = new Room("Park","on an empty plot of land.\n" +
+                "This would make a great spot for a park.", "at the park.", true, "down");
+        hospital = new Room("Hospital", "on an empty plot of land.\n" +
+                "This would make a great spot for a hospital.", "at the hospital", true, "up");
+        waterPlant = new Room("Water plant", "on an empty plot of land.\n" +
+                "This would make a great spot for a waterplant.", "at the water plant.", true, "down");
+        waterTreatmentPlant = new Room("Watertreatment facility","on an empty plot of land.\n" +
+                "This would make a great spot for a water treatment plant.", "at the water treatment plant", true,"up");
+        school = new Room("School", "on an empty plot of land.\n" +
+                "This would make a great spot for a school.", "at the school", true, "down");
+        sportsFacility = new Room("Sports facility","on an empty plot of land.\n" +
+                "This would make a great spot for a sports facility.", "at the sports facility", true, "up");
+        windmills = new Room("Windmills","on an empty plot of land.\n" +
+                "This would make a great spot for some windmills.", "at the windmill park", true, "up");
+        market = new Room("Market","on an empty plot of land.\n" +
+                "This would make a great spot for a market.", "at the market", true, "down");
 
         // Sets all the exits for each room, by giving the direction to the room
         home.setExit("up", dirtRoad1);
@@ -188,30 +188,6 @@ public class Game
         currentRoom = home;
     }
 
-    public void play() 
-    {
-        // Prints the welcome message
-        printWelcome();
-
-        // If true, the game ends
-        boolean finished = false;
-
-        // This is the game loop
-        while (! finished) {
-            // Basicly, the parser takes an input and formats it to a command
-            Command command = parser.getCommand();
-            // This is the game itself, that returns true if the game is completed
-            finished = processCommand(command);
-            if (roomsFinished == roomsToFinish) {
-                System.out.println("Congratulations - you won");
-                System.out.println("It took you " + day + " days");
-                finished = true;
-            }
-        }
-        // If the game is over, this message shows
-        System.out.println("Thank you for playing.  Goodbye.");
-    }
-
     // Prints a welcome message and shows the 'help' command
     private void printWelcome()
     {
@@ -227,7 +203,7 @@ public class Game
     }
 
     // This performs the main game actions, which takes a command from the parser
-    private boolean processCommand(Command command) 
+    public void processCommand(Command command)
     {
         boolean wantToQuit = false;
 
@@ -238,7 +214,7 @@ public class Game
         if(commandWord == Action.UNKNOWN) {
             // This should be sent to the GUI handler in the future
             System.out.println("I don't know what you mean...");
-            return false;
+            return;
         }
         // The help command
         if (commandWord == Action.HELP) {
@@ -282,7 +258,7 @@ public class Game
                 Item item = townHall.inventory.getItem(command.getSecondWord());
                 if (item == null){
                     System.out.println("No item by that name.");
-                    return false;
+                    return;
                 }
                 if (player.getBalance() > item.getPrice()) {
                     player.inventory.addItem(item);
@@ -347,7 +323,7 @@ public class Game
                     Item item = player.inventory.getItem(command.getSecondWord());
                     if (item == null) {
                         System.out.println("No item by that name.");
-                        return false;
+                        return;
                     }
                     player.inventory.removeItem(item);
                     player.setCanSleep(true);
@@ -369,7 +345,6 @@ public class Game
         else if (commandWord == Action.QUIT) {
             wantToQuit = quit(command);
         }
-        return wantToQuit;
     }
     // The help message to be displayed when the 'help' command is given
     private void printHelp() 

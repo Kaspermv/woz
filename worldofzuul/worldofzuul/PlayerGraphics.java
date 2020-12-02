@@ -2,13 +2,11 @@ package worldofzuul;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class PlayerGraphics {
     public final int MOVEMENTSPEED = 3;
-
-    public final int YOFFSET = 5;
-    public final int XLEFTOFFSET = 35;
-    public final int XRIGHTOFFSET;
 
     public int imgHeight;
     public int imgWidth;
@@ -24,22 +22,22 @@ public class PlayerGraphics {
         img.setLayoutX(400);
         img.setLayoutY(400);
 
-
         imgHeight = (int)playerImg.getHeight();
         imgWidth = (int)playerImg.getWidth();
-        XRIGHTOFFSET = imgWidth - 35;
     }
 
-    public void setXPos(int value){
-        img.setLayoutX(value);
+    public void setXPos(double value){
+        img.setLayoutX(value-35);
+
     }
-    public void setYPos(int value){
-        img.setLayoutY(value);
+    public void setYPos(double value){
+        img.setLayoutY(value-5);
+
     }
-    public int getXPos(){
-        return (int)img.getLayoutX();
+    public double getXPos(){
+        return img.getLayoutX()+35;
     }
-    public int getYPos(){
-        return (int)img.getLayoutY();
+    public double getYPos(){
+        return img.getLayoutY()+5;
     }
 }

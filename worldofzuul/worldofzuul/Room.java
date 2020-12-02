@@ -12,6 +12,8 @@ public class Room
     private String secondDescription;
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
     private HashMap<String, Room> exits;
+    public String exitLocations;
+    public String name;
 
     private int currentLevel = 0, maxLevel = 0;
     private int pricePerLevel;
@@ -20,11 +22,13 @@ public class Room
     private int qualityRequirementPerLevel = 0;
     private boolean hasPrice;
 
-    public Room(String description, String secondDescription, boolean hasPrice)
+    public Room(String name, String description, String secondDescription, boolean hasPrice, String exitType)
     {
         this.description = description;
         this.secondDescription = secondDescription;
         this.hasPrice = hasPrice;
+        this.exitLocations = exitType;
+        this.name = name;
         exits = new HashMap<String, Room>();
     }
 

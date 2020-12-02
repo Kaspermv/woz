@@ -9,8 +9,6 @@ import javafx.stage.Stage;
 
 public class Start extends Application {
 
-
-
     @Override
     public void start(Stage primaryStage) throws Exception{
         ViewManager manager = new ViewManager();
@@ -24,9 +22,6 @@ public class Start extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        //Game start = new Game();
-        //start.play();
-
     }
 
 }
