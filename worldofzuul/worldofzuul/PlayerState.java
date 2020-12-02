@@ -1,6 +1,6 @@
 package worldofzuul;
 
-public class Player {
+public class PlayerState {
     private boolean canSleep = false;
     public int balance = 1000;
     public int income = 0;
@@ -8,7 +8,7 @@ public class Player {
     public int lifeQuality = 100;
 
 
-    public Player(){
+    public PlayerState(){
         inventory = new Inventory();
     }
 

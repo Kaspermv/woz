@@ -6,7 +6,7 @@ import java.sql.SQLOutput;
 
 public class Game
 {
-    Player player = new Player();
+    PlayerState player = new PlayerState();
     private Parser parser;
     private Room currentRoom;
     public int day = 0;
