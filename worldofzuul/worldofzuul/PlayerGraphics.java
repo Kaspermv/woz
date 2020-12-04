@@ -28,11 +28,9 @@ public class PlayerGraphics {
 
     public void setXPos(double value){
         img.setLayoutX(value-35);
-
     }
     public void setYPos(double value){
         img.setLayoutY(value-5);
-
     }
     public double getXPos(){
         return img.getLayoutX()+35;

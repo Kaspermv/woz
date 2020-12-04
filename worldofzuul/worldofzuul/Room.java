@@ -8,19 +8,19 @@ import java.util.Iterator;
 public class Room 
 {
     // This is the description for displaying where the player is, e.g. "in the bedroom".
-    private String description;
-    private String secondDescription;
+    public String description;
+    public String secondDescription;
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
-    private HashMap<String, Room> exits;
+    public HashMap<String, Room> exits;
     public String exitLocations;
     public String name;
 
-    private int currentLevel = 0, maxLevel = 0;
-    private int pricePerLevel;
-    private int qualityPerLevel;
-    private int payPerLevel;
-    private int qualityRequirementPerLevel = 0;
-    private boolean hasPrice;
+    public int currentLevel = 0, maxLevel = 0;
+    public int pricePerLevel;
+    public int qualityPerLevel;
+    public int payPerLevel;
+    public int qualityRequirementPerLevel = 0;
+    public boolean hasPrice;
 
     public Room(String name, String description, String secondDescription, boolean hasPrice, String exitType)
     {

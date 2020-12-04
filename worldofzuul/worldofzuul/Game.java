@@ -33,10 +33,10 @@ public class Game
         // Creates all the rooms, and sets their description.
         home = new Room("Home","in your home.", "in your home", false, "up");
         dirtRoad1 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
-        dirtRoad2 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
-        dirtRoad3 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad2 = new Room("Dirt road2","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad3 = new Room("Dirt road3","outside on a dirt road.", "outside on an asphalt road", false, "all");
         dirtRoad4 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
-        dirtRoad5 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
+        dirtRoad5 = new Room("Dirt road2","outside on a dirt road.", "outside on an asphalt road", false, "all");
         city = new Room("City","in the big city.", "in the big city.", false, "all");
         bank = new Room("Bank","in the bank.", "in the bank.", false, "right");
         townHall = new TownHall("Town hall","in the town hall.", "in the town hall.", false, "down");
