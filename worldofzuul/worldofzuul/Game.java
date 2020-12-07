@@ -334,7 +334,7 @@ public class Game
                         System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + player.getBalance());
                         player.setCanSleep(false);
                     } else {
-                        System.out.println("You are not tired. Go do something.");
+                        System.out.println("You are not tir ed. Go do something.");
                     }
                 } else {
                     System.out.println("You can't sleep here");
@@ -436,6 +436,19 @@ public class Game
         }
     }
 
+
+
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Integer i = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 
 
 }

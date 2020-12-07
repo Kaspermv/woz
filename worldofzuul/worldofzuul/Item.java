@@ -30,6 +30,9 @@ public class Item {
         return id;
     }
 
+
+
+
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;

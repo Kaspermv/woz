@@ -22,23 +22,17 @@ public class Inventory {
     }
 
 
-    /*
-        public Item getItem(String name) {
-            if (!inventoryMap.isEmpty()) {
-                return
-            }
-        }
-
-
-     */
     public Item getItem(String id) {
         if (!inventoryMap.isEmpty()) {
             if (isNumeric(id)) {
                 return inventoryMap.get(Integer.parseInt(id));
             } else
-                return inventoryMap.get(id);
-
-        } else return null;
+                for (Map.Entry<Integer, Item> items: inventoryMap.entrySet()){
+                    if (items.getValue().getName().equals(id)){
+                        return inventoryMap.get(items.getKey());
+                    }
+                }
+        } return null;
     }
 
     public Boolean isEmpty() {
