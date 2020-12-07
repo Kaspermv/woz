@@ -4,8 +4,7 @@ import com.sun.security.jgss.GSSUtil;
 
 import java.sql.SQLOutput;
 
-public class Game
-{
+public class Game {
     //Creates a player object to be controlled by user
     Player player = new Player();
     //Creates a "parser" to be able to use commands
@@ -26,8 +25,7 @@ public class Game
     public TownHall townHall;
 
 
-    public Game() 
-    {
+    public Game() {
         //Calls function for creating rooms
         createRooms();
         //adds a parser to the game
@@ -35,8 +33,7 @@ public class Game
     }
 
 
-    private void createRooms()
-    {
+    private void createRooms() {
 
 
         // Creates all the rooms, and sets their description and types.
@@ -114,7 +111,7 @@ public class Game
         dirtRoad4.setExit("right", dirtRoad5);
 
         sportsFacility.setExit("up", dirtRoad4);
-        
+
         school.setExit("down", dirtRoad4);
 
         dirtRoad5.setExit("up", market);
@@ -197,8 +194,7 @@ public class Game
         currentRoom = home;
     }
 
-    public void play() 
-    {
+    public void play() {
         // Prints the welcome message
         printWelcome();
 
@@ -206,7 +202,7 @@ public class Game
         boolean finished = false;
 
         // This is the game loop
-        while (! finished) {
+        while (!finished) {
             // Basicly, the parser takes an input and formats it to a command
             Command command = parser.getCommand();
             // This is the game itself, that returns true if the game is completed
@@ -222,8 +218,7 @@ public class Game
     }
 
     // Prints a welcome message and shows the 'help' command
-    private void printWelcome()
-    {
+    private void printWelcome() {
         System.out.println("Welcome to the World of Slum!");
         System.out.println("World of Slum is a new, learning adventure game.");
         System.out.println("The goal is to upgrade all places to their max level in the fewest amount of days.");
@@ -236,156 +231,159 @@ public class Game
     }
 
     // This performs the main game actions, which takes a command from the parser
-    private boolean processCommand(Command command) 
-    {
+    private boolean processCommand(Command command) {
         boolean wantToQuit = false;
 
         // Stores the enum from the command in a variable
         Action commandWord = command.getCommandWord();
 
-
-
-        // If the enum is the UNKNOWN, which means it isn't one of the pre-made commands, it ends the game turn
-        if(commandWord == Action.UNKNOWN) {
-            // This should be sent to the GUI handler in the future
-            System.out.println("I don't know what you mean...");
-            return false;
-        }
-        // The help command
-
-        if (commandWord == Action.HELP) {
-            if (command.hasSecondWord()) {
-                switch (command.getSecondWord()) {
-                    case "go":
-                        System.out.println("Type go followed by one of the available directions to move through the map. ex: \"go up\"");
-                        System.out.println(currentRoom.getExitString());
-                        break;
-                    case "buy":
-                        System.out.println("Type buy followed by the name of the item you want to purchase. ex: \"buy Road-upgrade\"");
-                        System.out.println("Hint: items can be bought at the town hall");
-                        break;
-                    case "quit":
-                        System.out.println("Type quit to exit the game - your progress will be lost");
-                        break;
-                    case "sleep":
-                        System.out.println("Type sleep to let a day go by - this pays out your daily income");
-                        System.out.println("You can only sleep at home");
-                        break;
-                    case "use":
-                        System.out.println("Type use followed by the name of the item you want to use");
-                        System.out.println("Items can only be used in specific rooms");
-                        break;
-                    case "status":
-                        System.out.println("Type status to check your balance, life quality and current income");
-                        break;
-                    default:
-                        System.out.println("Thats not a viable command");
-                }
-            } else { printHelp(); }
-
-        }
-        // The GO command calls the goRoom function, with the given command
-        else if (commandWord == Action.GO) {
-            goRoom(command);
-        }
-        else if (commandWord == Action.BUY){
-            if (command.hasSecondWord() && currentRoom == townHall){
-                // Buys item from vendor
-                Item item = townHall.inventory.getItem(command.getSecondWord());
-                if (item == null){
-                    System.out.println("No item by that name.");
-                    return false;
-                }
-                if (player.getBalance() > item.getPrice()) {
-                    player.inventory.addItem(item);
-                    townHall.inventory.removeItem(item);
-                    player.setCanSleep(true);
-                    player.setBalance(player.getBalance() - item.getPrice());
-
-                    System.out.println("You bought the item");
-                    System.out.println("You can buy these items to upgrade your town:");
-                    System.out.println(townHall.toString());
-                    System.out.println("To buy an item, type BUY and the name of the item.");
-                }
-            } else if (player.getBalance() >= currentRoom.getPrice() && currentRoom.buyable(player.getLifeQuality()) && !command.hasSecondWord()){
-                // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
-                player.setBalance(player.getBalance() - currentRoom.getPrice());
-                player.setIncome(player.getIncome() + currentRoom.getPayPerLevel());
-                player.setLifeQuality(player.getLifeQuality() + currentRoom.getQualityPerLevel());
-
-                currentRoom.buy();
-                player.setCanSleep(true);
-                System.out.println(currentRoom.getDescription());
-            } else {
-                System.out.println("Nothing was bought");
-            }
-        }
-        else if (commandWord == Action.STATUS){
-            printStatus(command);
-        }
-
-        else if (commandWord == Action.INVENTORY){
-            if (!player.inventory.isEmpty()) {
-                System.out.println(player.inventory.toString());
-            } else{
-                System.out.println("Inventory is empty.");
-            }
-        }
-
-        else if (commandWord == Action.SLEEP){
-            if (command.hasSecondWord()) {
-                System.out.println("Sleep command doesn't take a second argument");
-            } else
-            {
-                if (currentRoom == home) {
-                    if (player.isCanSleep()) {
-                        //go to sleep
-                        System.out.println("Going to sleep");
-                        player.setBalance(player.getBalance() + player.getIncome());
-                        day++;
-                        System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + player.getBalance());
-                        player.setCanSleep(false);
-                    } else {
-                        System.out.println("You are not tir ed. Go do something.");
-                    }
-                } else {
-                    System.out.println("You can't sleep here");
-                }
-            }
-        } else if (commandWord == Action.USE){
-            if (command.hasSecondWord()){
-                if (currentRoom == dirtRoad1 || currentRoom == dirtRoad2 || currentRoom == dirtRoad3 || currentRoom == dirtRoad4 || currentRoom == dirtRoad5) {
-                    // Upgrades a dirt road, using an item
-                    Item item = player.inventory.getItem(command.getSecondWord());
+        switch (command.getCommandWord()) {
+            case GO:
+                goRoom(command);
+                break;
+            case BUY:
+                if (command.hasSecondWord() && currentRoom == townHall) {
+                    // Buys item from vendor
+                    Item item = townHall.inventory.getItem(command.getSecondWord());
                     if (item == null) {
                         System.out.println("No item by that name.");
                         return false;
                     }
-                    player.inventory.removeItem(item);
-                    player.setCanSleep(true);
+                    if (player.getBalance() > item.getPrice()) {
+                        player.inventory.addItem(item);
+                        townHall.inventory.removeItem(item);
+                        player.setCanSleep(true);
+                        player.setBalance(player.getBalance() - item.getPrice());
+
+                        System.out.println("You bought the item");
+                        System.out.println("You can buy these items to upgrade your town:");
+                        System.out.println(townHall.toString());
+                        System.out.println("To buy an item, type BUY and the name of the item.");
+                        break;
+                    }
+                } else if (player.getBalance() >= currentRoom.getPrice() && currentRoom.buyable(player.getLifeQuality()) && !command.hasSecondWord()) {
+                    // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
+                    player.setBalance(player.getBalance() - currentRoom.getPrice());
+                    player.setIncome(player.getIncome() + currentRoom.getPayPerLevel());
+                    player.setLifeQuality(player.getLifeQuality() + currentRoom.getQualityPerLevel());
 
                     currentRoom.buy();
-                    player.lifeQuality += currentRoom.getQuality();
-                    System.out.println("You upgraded the road.");
+                    player.setCanSleep(true);
                     System.out.println(currentRoom.getDescription());
-                } else{
-                    System.out.println("You can't use that here.");
+                    break;
+                } else {
+                    System.out.println("Nothing was bought");
+                    break;
                 }
-            } else {
-                System.out.println("You cant do that.");
-            }
-        }
+            case UNKNOWN:
+                // If the enum is the UNKNOWN, which means it isn't one of the pre-made commands, it ends the game turn
+                // This should be sent to the GUI handler in the future
+                System.out.println("I don't know what you mean...");
+                return false;
+            case HELP:
+                // The help command
+                if (command.hasSecondWord()) {
+                    switch (command.getSecondWord()) {
+                        case "go":
+                            System.out.println("Type go followed by one of the available directions to move through the map. ex: \"go up\"");
+                            System.out.println(currentRoom.getExitString());
+                            break;
+                        case "buy":
+                            System.out.println("Type buy followed by the name of the item you want to purchase. ex: \"buy Road-upgrade\"");
+                            System.out.println("Hint: items can be bought at the town hall");
+                            break;
+                        case "quit":
+                            System.out.println("Type quit to exit the game - your progress will be lost");
+                            break;
+                        case "sleep":
+                            System.out.println("Type sleep to let a day go by - this pays out your daily income");
+                            System.out.println("You can only sleep at home");
+                            break;
+                        case "use":
+                            System.out.println("Type use followed by the name of the item you want to use");
+                            System.out.println("Items can only be used in specific rooms");
+                            break;
+                        case "status":
+                            System.out.println("Type status to check your balance, life quality and current income");
+                            break;
+                        default:
+                            System.out.println("Thats not a viable command");
+                    }
+                    break;
+                } else {
+                    printHelp();
+                    break;
+                }
+            case STATUS:
+                printStatus(command);
+                break;
+            case INVENTORY:
+                if (!player.inventory.isEmpty()) {
+                    System.out.println(player.inventory.toString());
+                    break;
+                } else {
+                    System.out.println("Inventory is empty.");
+                    break;
+                }
+            case SLEEP:
+                if (command.hasSecondWord()) {
+                    System.out.println("Sleep command doesn't take a second argument");
+                    break;
+                } else {
+                    if (currentRoom == home) {
+                        if (player.isCanSleep()) {
+                            //go to sleep
+                            System.out.println("Going to sleep");
+                            player.setBalance(player.getBalance() + player.getIncome());
+                            day++;
+                            System.out.println("You wake up on day " + day + " and check your bank account. Balance: " + player.getBalance());
+                            player.setCanSleep(false);
+                            break;
+                        } else {
+                            System.out.println("You are not tired. Go do something.");
+                            break;
+                        }
+                    } else {
+                        System.out.println("You can't sleep here");
+                        break;
+                    }
+                }
+            case USE:
+                if (command.hasSecondWord()) {
+                    if (currentRoom == dirtRoad1 || currentRoom == dirtRoad2 || currentRoom == dirtRoad3 || currentRoom == dirtRoad4 || currentRoom == dirtRoad5) {
+                        // Upgrades a dirt road, using an item
+                        Item item = player.inventory.getItem(command.getSecondWord());
+                        if (item == null) {
+                            System.out.println("No item by that name.");
+                            return false;
+                        }
+                        player.inventory.removeItem(item);
+                        player.setCanSleep(true);
 
+                        currentRoom.buy();
+                        player.lifeQuality += currentRoom.getQuality();
+                        System.out.println("You upgraded the road.");
+                        System.out.println(currentRoom.getDescription());
+                        break;
+                    } else {
+                        System.out.println("You can't use that here.");
+                        break;
+                    }
+                } else {
+                    System.out.println("You cant do that.");
+                    break;
+                }
+            case QUIT:
+                // Sets the quit condition to true, if the correct quit command is the input
+                wantToQuit = quit(command);
 
-        // Sets the quit condition to true, if the correct quit command is the input
-        else if (commandWord == Action.QUIT) {
-            wantToQuit = quit(command);
         }
         return wantToQuit;
     }
+
+
     // The help message to be displayed when the 'help' command is given
-    private void printHelp() 
-    {
+    private void printHelp() {
         // All this should be sent through the GUI in the future
         System.out.println("You are " + currentRoom.getDescription());
         System.out.println();
@@ -395,11 +393,11 @@ public class Game
         System.out.println();
         System.out.println("To get more info on a specific command, type help followed by the command. ex: \"help use\"");
     }
+
     // The function that moves the player, given a valid command
-    private void goRoom(Command command) 
-    {
+    private void goRoom(Command command) {
         // The 'go' command requires a direction. This checks to see if it does, not if it's valid
-        if(!command.hasSecondWord()) {
+        if (!command.hasSecondWord()) {
             // Should be sent to the GUI
             System.out.println("Go where?");
             return;
@@ -413,13 +411,12 @@ public class Game
         if (nextRoom == null) {
             // Should be sent to the GUI
             System.out.println("This is a dead end!");
-        }
-        else {
+        } else {
             // Changes the current that the player is in, and displays the new current room and exits
             currentRoom = nextRoom;
             // Should be sent to the GUI
             System.out.println(currentRoom.getDescription());
-            if (currentRoom == townHall){
+            if (currentRoom == townHall) {
                 System.out.println();
                 System.out.println("You can buy these items to upgrade your town:");
                 System.out.println(townHall.toString());
@@ -429,25 +426,23 @@ public class Game
     }
 
 
-    private void printStatus (Command command){
-        if (command.hasSecondWord()){
+    private void printStatus(Command command) {
+        if (command.hasSecondWord()) {
             System.out.println("Status command doesn't take an argument");
         } else {
             System.out.println("Balance: $" + player.getBalance() + " | Life quality: " + player.getLifeQuality() + " | Income: $" + player.getIncome() + " per day");
         }
     }
+
     // Returns true if the 'quit' command is given, and only contains that command
-    private boolean quit(Command command) 
-    {
-        if(command.hasSecondWord()) {
+    private boolean quit(Command command) {
+        if (command.hasSecondWord()) {
             System.out.println("Quit what?");
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
-
 
 
     public static boolean isNumeric(String strNum) {
