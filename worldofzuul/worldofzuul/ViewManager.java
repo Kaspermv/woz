@@ -1,14 +1,19 @@
 package worldofzuul;
 
 import javafx.animation.AnimationTimer;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import javafx.scene.shape.Rectangle;
@@ -32,15 +37,23 @@ public class ViewManager {
     private boolean movingLeft;
     private boolean movingRight;
 
+    private boolean actionKey;
+
     // Exit hitboxes
     private Rectangle upRect;
     private Rectangle downRect;
     private Rectangle leftRect;
     private Rectangle rightRect;
 
+    private ImageView bubble;
     private ImageView textbox;
-
+    private ImageView sign;
+    private Rectangle signRect;
     public Rectangle playerRect;
+
+    private Text t;
+    public ImageView buyButtonImage;
+    public ImageView buyButtonPressedImage;
 
     public HashMap<String, Background> backgrounds;
     final File dir = new File("Graphics/Backgrounds");
@@ -52,6 +65,8 @@ public class ViewManager {
     public ViewManager(){
         game = new Game();
         player = new PlayerGraphics();
+        // Display player on top
+        player.img.setViewOrder(-1);
         // Loads background images into a hashmap
         backgrounds = new HashMap<>();
         try{
@@ -64,17 +79,28 @@ public class ViewManager {
             }
             // Load other images
             textbox = new ImageView(new Image("Graphics/Tekst boks.png"));
+            sign = new ImageView(new Image("Graphics/Skilt.png",170,150,true,false));
+            bubble = new ImageView(new Image("Graphics/Bubble.png"));
+            buyButtonImage = new ImageView(new Image("Graphics/Buy.png"));
+            buyButtonPressedImage = new ImageView(new Image("Graphics/Buy pressed.png"));
 
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Unable to load images.");
         }
 
+        // Sign setup
+        sign.setLayoutX(620);
+        sign.setLayoutY(500);
+        signRect = CreateHitbox.imageView(sign);
+
         textbox.setY(800);
         textbox.setX(0);
 
+        createBuyButton();
+
         mainPane = new Pane();
-        mainScene = new Scene(mainPane, WIDTH, GAMEHEIGHT +160);
+        mainScene = new Scene(mainPane, WIDTH, GAMEHEIGHT + textbox.getImage().getHeight());
         mainStage = new Stage();
         mainStage.setScene(mainScene);
 
@@ -104,13 +130,13 @@ public class ViewManager {
         mainPane.getChildren().add(playerRect);
 
     }
-    // Rectangles need size of 5
+
+    // Game loop
     public void createGameLoop(){
         gameTimer = new AnimationTimer(){
 
             @Override
             public void handle(long l) {
-                // Game loop
 
                 move();
 
@@ -127,9 +153,60 @@ public class ViewManager {
                 if (mainPane.getChildren().contains(rightRect) && playerRect.intersects(rightRect.getLayoutBounds())){
                     changeRoom("right");
                 }
+
+                // Check for sign collision
+                if (mainPane.getChildren().contains(sign) && playerRect.intersects(signRect.getLayoutBounds())){
+                    // Show the bubble
+                    if (!mainPane.getChildren().contains(bubble)) {
+                        mainPane.getChildren().add(bubble);
+                    }
+                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth()/2 - bubble.getImage().getWidth()/2);
+                    bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
+
+                    if (actionKey) {
+                        if (!mainPane.getChildren().contains(t)){
+                            buyMenu();
+                        }
+                    }
+                } else if (mainPane.getChildren().contains(bubble)) {
+                    mainPane.getChildren().removeAll(bubble, t, buyButtonImage, buyButtonPressedImage);
+                    buyButtonPressedImage.setViewOrder(0);
+                }
             }
         };
         gameTimer.start();
+    }
+
+    public void buyMenu(){
+        t = new Text(textbox.getX() + 25, textbox.getY() + 35, game.currentRoom.getDescription());
+        t.setFont(new Font(14));
+
+        mainPane.getChildren().addAll(t, buyButtonPressedImage,buyButtonImage);
+    }
+
+    public void createBuyButton(){
+        buyButtonImage.setLayoutX(600);
+        buyButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonImage.getImage().getHeight()/2);
+        buyButtonPressedImage.setLayoutX(600);
+        buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonImage.getImage().getHeight()/2);
+
+        buyButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                buyButtonPressedImage.setViewOrder(-1);
+                event.consume();
+            }
+        });
+        buyButtonImage.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                buyButtonPressedImage.setViewOrder(0);
+                game.processCommand(new Command(Action.BUY, null));
+                chooseBackground();
+                t.setText(game.currentRoom.getDescription());
+                event.consume();
+            }
+        });
     }
 
     public void createExits(){
@@ -176,28 +253,39 @@ public class ViewManager {
     }
 
     public void chooseBackground(){
-        // Choose which background to display
+        // Choose which background and sign to display
         if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel != game.currentRoom.maxLevel) {
             // Dirt road
             mainPane.setBackground(backgrounds.get(game.currentRoom.name));
-        }else  if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel == game.currentRoom.maxLevel) {
+            mainPane.getChildren().removeAll(sign,signRect);
+        } else  if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel == game.currentRoom.maxLevel) {
             // Upgraded road NEEDS NEW GRAPHICS
             mainPane.setBackground(backgrounds.get(game.currentRoom.name));
+            mainPane.getChildren().removeAll(sign,signRect);
         } else if (game.currentRoom.currentLevel == 0) {
-            // Empty plots of land. Not housing
-            if (game.currentRoom.name == "Housing") {
+            // Empty plots of land. Not housing and power plant
+            if (game.currentRoom.name == "Housing" || game.currentRoom.name == "Powerplant") {
                 mainPane.setBackground(backgrounds.get(game.currentRoom.name));
             } else if (game.currentRoom.exitLocations == "up"){
                 mainPane.setBackground(backgrounds.get("Plot down"));
             } else if (game.currentRoom.exitLocations == "down"){
                 mainPane.setBackground(backgrounds.get("Plot up"));
             }
+            // Show sign for upgrades
+            if (!mainPane.getChildren().contains(sign)){
+                mainPane.getChildren().addAll(sign,signRect);
+            }
+
         } else if (game.currentRoom.currentLevel != game.currentRoom.maxLevel) {
             // Not fully upgraded places
             mainPane.setBackground(backgrounds.get(game.currentRoom.name));
+            if (!mainPane.getChildren().contains(sign)){
+                mainPane.getChildren().addAll(sign,signRect);
+            }
         } else {
             // Fully upgraded places and others
             mainPane.setBackground(backgrounds.get(game.currentRoom.name));
+            mainPane.getChildren().removeAll(sign,signRect);
         }
     }
 
@@ -236,6 +324,7 @@ public class ViewManager {
         mainScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+                // Movement
                 if (keyEvent.getCode() == KeyCode.A){
                     movingLeft = true;
                 } else if (keyEvent.getCode() == KeyCode.D){
@@ -244,6 +333,11 @@ public class ViewManager {
                     movingUp = true;
                 } else if (keyEvent.getCode() == KeyCode.S){
                     movingDown = true;
+                }
+
+                // Interaction
+                if (keyEvent.getCode() == KeyCode.E){
+                    actionKey = true;
                 }
             }
         });
@@ -258,6 +352,11 @@ public class ViewManager {
                     movingUp = false;
                 } else if (keyEvent.getCode() == KeyCode.S){
                     movingDown = false;
+                }
+
+                // Interaction
+                if (keyEvent.getCode() == KeyCode.E){
+                    actionKey = false;
                 }
             }
         });

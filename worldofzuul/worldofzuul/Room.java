@@ -106,16 +106,16 @@ public class Room
             return "You are " + secondDescription + "\n"
                     +getExitString();
         } else if (currentLevel == 0) {
-            return "You are " + description + " Level: " + currentLevel + "/" + maxLevel + ".\n"
-                    + "Price: " + getPrice() + ".\n"
-                    + "Lifequality required: " + getQualityRequirement() + ".\n"
-                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
+            return "You are " + description + " Level: " + currentLevel + "/" + maxLevel + "\n"
+                    + "Price: " + getPrice() + ",-\n"
+                    + "Lifequality required: " + getQualityRequirement() + "\n"
+                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- Revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
                     + getExitString();
         } else if (currentLevel != maxLevel) {
             return "You are " + secondDescription + " Level: " + currentLevel + "/" + maxLevel + ".\n"
                     + "Price: " + getPrice() + ".\n"
                     + "Lifequality required: " + getQualityRequirement() + ".\n"
-                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
+                    + "Current revenue: " + getPayPerLevel() * currentLevel + ",- Revenue after upgrade: " + getPayPerLevel() * (currentLevel + 1) + ",-\n"
                     + getExitString();
         } else {
             return "You are " + secondDescription + " Level: " + currentLevel + "/" + maxLevel + ".\n"
