@@ -119,7 +119,7 @@ public class Room
                     + getExitString();
         } else {
             return "You are " + secondDescription + " Level: " + currentLevel + "/" + maxLevel + ".\n"
-                    + "Current revenue: " + getPayPerLevel() * currentLevel
+                    + "Current revenue: " + getPayPerLevel() * currentLevel + "\n"
                     + getExitString();
         }
     }

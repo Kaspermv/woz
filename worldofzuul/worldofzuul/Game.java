@@ -312,8 +312,6 @@ public class Game
                     } else {
                         System.out.println("You are not tired. Go do something.");
                     }
-                } else {
-                    System.out.println("You can't sleep here");
                 }
             }
         } else if (commandWord == Action.USE){

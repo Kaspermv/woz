@@ -1,10 +1,8 @@
 package worldofzuul;
 
 import javafx.animation.AnimationTimer;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -19,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 public class ViewManager {
@@ -47,13 +46,20 @@ public class ViewManager {
 
     private ImageView bubble;
     private ImageView textbox;
+    private ImageView dataFrame;
+    private Text dataText;
     private ImageView sign;
     private Rectangle signRect;
+    private Rectangle bedRect;
+    private ImageView bed;
+
     public Rectangle playerRect;
 
-    private Text t;
-    public ImageView buyButtonImage;
-    public ImageView buyButtonPressedImage;
+    private Text bottomTextBox;
+    private ImageView buyButtonImage;
+    private ImageView buyButtonPressedImage;
+    private ImageView sleepPressedButtonImage;
+    private ImageView sleepButtonImage;
 
     public HashMap<String, Background> backgrounds;
     final File dir = new File("Graphics/Backgrounds");
@@ -83,21 +89,41 @@ public class ViewManager {
             bubble = new ImageView(new Image("Graphics/Bubble.png"));
             buyButtonImage = new ImageView(new Image("Graphics/Buy.png"));
             buyButtonPressedImage = new ImageView(new Image("Graphics/Buy pressed.png"));
+            dataFrame = new ImageView(new Image("Graphics/Data frame.png"));
+            bed = new ImageView(new Image("Graphics/Bed.png"));
+            sleepButtonImage = new ImageView(new Image("Graphics/Sleep.png"));
+            sleepPressedButtonImage = new ImageView(new Image("Graphics/Sleep pressed.png"));
 
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Unable to load images.");
         }
 
+        // Bed setup
+        bed.setLayoutX(600);
+        bed.setLayoutY(450);
+        bedRect = CreateHitbox.imageView(bed);
+
         // Sign setup
         sign.setLayoutX(620);
         sign.setLayoutY(500);
         signRect = CreateHitbox.imageView(sign);
 
+        // Textbox setup
         textbox.setY(800);
         textbox.setX(0);
+        bottomTextBox = new Text(textbox.getX() + 25, textbox.getY() + 35, game.currentRoom.getDescription());
+
+        // Data frame setup
+        dataFrame.setLayoutX(0);
+        dataFrame.setLayoutY(0);
+        dataFrame.setViewOrder(-2);
+        dataText = new Text(8,18, MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality,game.player.income));
+        dataText.setFont(new Font(12.5));
+        dataText.setViewOrder(-3);
 
         createBuyButton();
+        createSleepButton();
 
         mainPane = new Pane();
         mainScene = new Scene(mainPane, WIDTH, GAMEHEIGHT + textbox.getImage().getHeight());
@@ -116,7 +142,7 @@ public class ViewManager {
 
         createExits();
         mainPane.setBackground(backgrounds.get(game.currentRoom.name));
-        mainPane.getChildren().addAll(player.img, textbox);
+        mainPane.getChildren().addAll(player.img, textbox, dataFrame, dataText, bedRect, bed);
 
         // Creating player hitbox
         playerRect = new Rectangle();
@@ -141,54 +167,105 @@ public class ViewManager {
                 move();
 
                 // Checks for collision with exits
-                if (mainPane.getChildren().contains(upRect) && playerRect.intersects(upRect.getLayoutBounds())){
+                if (mainPane.getChildren().contains(upRect) && playerRect.intersects(upRect.getLayoutBounds())) {
                     changeRoom("up");
                 }
-                if (mainPane.getChildren().contains(downRect) && playerRect.intersects(downRect.getLayoutBounds())){
+                if (mainPane.getChildren().contains(downRect) && playerRect.intersects(downRect.getLayoutBounds())) {
                     changeRoom("down");
                 }
-                if (mainPane.getChildren().contains(leftRect) && playerRect.intersects(leftRect.getLayoutBounds())){
+                if (mainPane.getChildren().contains(leftRect) && playerRect.intersects(leftRect.getLayoutBounds())) {
                     changeRoom("left");
                 }
-                if (mainPane.getChildren().contains(rightRect) && playerRect.intersects(rightRect.getLayoutBounds())){
+                if (mainPane.getChildren().contains(rightRect) && playerRect.intersects(rightRect.getLayoutBounds())) {
                     changeRoom("right");
                 }
 
                 // Check for sign collision
-                if (mainPane.getChildren().contains(sign) && playerRect.intersects(signRect.getLayoutBounds())){
+                if (mainPane.getChildren().contains(signRect) && playerRect.intersects(signRect.getLayoutBounds())) {
                     // Show the bubble
                     if (!mainPane.getChildren().contains(bubble)) {
                         mainPane.getChildren().add(bubble);
                     }
-                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth()/2 - bubble.getImage().getWidth()/2);
+                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
                     bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
 
                     if (actionKey) {
-                        if (!mainPane.getChildren().contains(t)){
+                        if (!mainPane.getChildren().contains(bottomTextBox)) {
                             buyMenu();
                         }
                     }
+                } else if(mainPane.getChildren().contains(bedRect) && playerRect.intersects(bedRect.getLayoutBounds())) {
+                    // Show the bubble
+                    if (!mainPane.getChildren().contains(bubble)) {
+                        mainPane.getChildren().add(bubble);
+                    }
+                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
+                    bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
+
+                    if (actionKey) {
+                        if (!mainPane.getChildren().contains(bottomTextBox)) {
+                            sleepMenu();
+                        }
+                    }
+
                 } else if (mainPane.getChildren().contains(bubble)) {
-                    mainPane.getChildren().removeAll(bubble, t, buyButtonImage, buyButtonPressedImage);
+                    mainPane.getChildren().removeAll(bubble, bottomTextBox, buyButtonImage, buyButtonPressedImage, sleepButtonImage, sleepPressedButtonImage);
                     buyButtonPressedImage.setViewOrder(0);
+                    sleepPressedButtonImage.setViewOrder(0);
                 }
             }
         };
         gameTimer.start();
     }
 
-    public void buyMenu(){
-        t = new Text(textbox.getX() + 25, textbox.getY() + 35, game.currentRoom.getDescription());
-        t.setFont(new Font(14));
+    public void sleepMenu(){
+        bottomTextBox.setText("Sleep here for a nights rest, and gain income.");
+        bottomTextBox.setFont(new Font(14));
 
-        mainPane.getChildren().addAll(t, buyButtonPressedImage,buyButtonImage);
+        mainPane.getChildren().addAll(bottomTextBox, sleepPressedButtonImage, sleepButtonImage);
+    }
+
+    public void buyMenu(){
+        bottomTextBox.setText(game.currentRoom.getDescription());
+        bottomTextBox.setFont(new Font(14));
+
+        mainPane.getChildren().addAll(bottomTextBox, buyButtonPressedImage,buyButtonImage);
+    }
+
+    public void createSleepButton(){
+        sleepButtonImage.setLayoutX(600);
+        sleepButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - sleepButtonImage.getImage().getHeight()/2);
+        sleepPressedButtonImage.setLayoutX(600);
+        sleepPressedButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - sleepPressedButtonImage.getImage().getHeight()/2);
+
+        sleepButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                sleepPressedButtonImage.setViewOrder(-1);
+                event.consume();
+            }
+        });
+        sleepButtonImage.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                sleepPressedButtonImage.setViewOrder(0);
+                if (game.player.isCanSleep()) {
+                    game.processCommand(new Command(Action.SLEEP, null));
+                    dataText.setText(MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality,game.player.income));
+                    bottomTextBox.setText("You wake up on day " + game.day + ", check your bank account.");
+                } else {
+                    bottomTextBox.setText("You are not tired. Go do something.");
+                }
+                event.consume();
+            }
+        });
     }
 
     public void createBuyButton(){
         buyButtonImage.setLayoutX(600);
         buyButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonImage.getImage().getHeight()/2);
         buyButtonPressedImage.setLayoutX(600);
-        buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonImage.getImage().getHeight()/2);
+        buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonPressedImage.getImage().getHeight()/2);
 
         buyButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -202,8 +279,9 @@ public class ViewManager {
             public void handle(MouseEvent event) {
                 buyButtonPressedImage.setViewOrder(0);
                 game.processCommand(new Command(Action.BUY, null));
+                dataText.setText(MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality,game.player.income));
                 chooseBackground();
-                t.setText(game.currentRoom.getDescription());
+                bottomTextBox.setText(game.currentRoom.getDescription());
                 event.consume();
             }
         });
@@ -234,6 +312,12 @@ public class ViewManager {
         game.processCommand(new Command(Action.GO, direction));
 
         chooseBackground();
+
+        if (game.currentRoom.name != "Home"){
+            mainPane.getChildren().removeAll(bedRect,bed);
+        } else {
+            mainPane.getChildren().addAll(bedRect,bed);
+        }
 
         // Reset player position
         if (direction == "up") {
