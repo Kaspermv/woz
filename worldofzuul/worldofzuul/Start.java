@@ -15,7 +15,7 @@ public class Start extends Application {
         primaryStage.setScene(new Scene(window, 300, 275));
         primaryStage.show();
     }
-
+//Creates a new instance of Game
     public static void main(String[] args) {
         launch(args);
         Game start = new Game();

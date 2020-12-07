@@ -6,12 +6,18 @@ import java.sql.SQLOutput;
 
 public class Game
 {
+    //Creates a player object to be controlled by user
     Player player = new Player();
+    //Creates a "parser" to be able to use commands
     private Parser parser;
+    //Variable storing the current room the player is in
     private Room currentRoom;
+    //Variable for amount of days passed in game
     public int day = 0;
+    //Variable to keep track of how many rooms ar finished
     public static int roomsFinished = 0;
-    private int roomsToFinish = 15;
+    //Constant to check if player has finished game
+    final private int roomsToFinish = 15;
 
     // Declares all the rooms in the game
     public Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, powerplant, windmills,
@@ -19,9 +25,12 @@ public class Game
 
     public TownHall townHall;
 
+
     public Game() 
     {
+        //Calls function for creating rooms
         createRooms();
+        //adds a parser to the game
         parser = new Parser();
     }
 
@@ -30,7 +39,7 @@ public class Game
     {
 
 
-        // Creates all the rooms, and sets their description.
+        // Creates all the rooms, and sets their description and types.
         home = new Room("in your home.", "in your home", false);
         dirtRoad1 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
         dirtRoad2 = new Room("outside on a dirt road.", "outside on an asphalt road", false);
@@ -234,6 +243,8 @@ public class Game
         // Stores the enum from the command in a variable
         Action commandWord = command.getCommandWord();
 
+
+
         // If the enum is the UNKNOWN, which means it isn't one of the pre-made commands, it ends the game turn
         if(commandWord == Action.UNKNOWN) {
             // This should be sent to the GUI handler in the future
@@ -241,6 +252,7 @@ public class Game
             return false;
         }
         // The help command
+
         if (commandWord == Action.HELP) {
             if (command.hasSecondWord()) {
                 switch (command.getSecondWord()) {
