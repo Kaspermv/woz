@@ -2,6 +2,7 @@ package worldofzuul;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,12 +21,15 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
+
 public class ViewManager {
 
     public int GAMEHEIGHT = 800;
     public int WIDTH = 800;
 
-    public Pane mainPane;
+    public boolean debugMode = false;
+
+    public AnchorPane mainPane;
     public Scene mainScene;
     public Stage mainStage;
 
@@ -64,6 +68,12 @@ public class ViewManager {
     public HashMap<String, Background> backgrounds;
     final File dir = new File("Graphics/Backgrounds");
 
+    private GridPane inventoryPane;
+    private ImageView inventoryBackground;
+    private Image deed;
+    private final double vGap = 4;
+    private final double hGap = 4;
+
     public PlayerGraphics player;
 
     public Game game;
@@ -93,6 +103,8 @@ public class ViewManager {
             bed = new ImageView(new Image("Graphics/Bed.png"));
             sleepButtonImage = new ImageView(new Image("Graphics/Sleep.png"));
             sleepPressedButtonImage = new ImageView(new Image("Graphics/Sleep pressed.png"));
+            inventoryBackground = new ImageView(new Image("Graphics/Inventory background.png"));
+            deed = new Image("Graphics/Skøde.png");
 
         } catch (Exception e){
             e.printStackTrace();
@@ -103,11 +115,21 @@ public class ViewManager {
         bed.setLayoutX(600);
         bed.setLayoutY(450);
         bedRect = CreateHitbox.imageView(bed);
+        if (debugMode){
+            bedRect.setFill(Color.color(0,0,0,0.2));
+        } else {
+            bedRect.setFill(Color.color(0,0,0,0));
+        }
 
         // Sign setup
         sign.setLayoutX(620);
         sign.setLayoutY(500);
         signRect = CreateHitbox.imageView(sign);
+        if (debugMode){
+            signRect.setFill(Color.color(0,0,0,0.2));
+        } else {
+            signRect.setFill(Color.color(0,0,0,0));
+        }
 
         // Textbox setup
         textbox.setY(800);
@@ -125,10 +147,24 @@ public class ViewManager {
         createBuyButton();
         createSleepButton();
 
-        mainPane = new Pane();
+        inventoryPane = new GridPane();
+        mainPane = new AnchorPane(inventoryPane);
         mainScene = new Scene(mainPane, WIDTH, GAMEHEIGHT + textbox.getImage().getHeight());
         mainStage = new Stage();
         mainStage.setScene(mainScene);
+
+        // Setup inventory
+        // The values have been fine tuned by the pixel, hence the odd numbers
+        updateInventory();
+        inventoryPane.setVgap(vGap);
+        inventoryPane.setHgap(hGap);
+        inventoryPane.setLayoutX(608);
+        inventoryPane.setLayoutY(GAMEHEIGHT+45);
+        inventoryPane.setViewOrder(-2);
+        inventoryPane.setGridLinesVisible(true);
+        inventoryBackground.setLayoutX(604);
+        inventoryBackground.setLayoutY(GAMEHEIGHT+20);
+        inventoryBackground.setViewOrder(-1);
 
         // Generate exit rects
         upRect = new Rectangle(300,0,200,5);
@@ -142,21 +178,24 @@ public class ViewManager {
 
         createExits();
         mainPane.setBackground(backgrounds.get(game.currentRoom.name));
-        mainPane.getChildren().addAll(player.img, textbox, dataFrame, dataText, bedRect, bed);
+        mainPane.getChildren().addAll(player.img, textbox, dataFrame, dataText, bedRect, bed, inventoryBackground);
 
         // Creating player hitbox
         playerRect = new Rectangle();
-        playerRect.setFill(Color.color(0,0,0,0.2));
-
+        if (debugMode) {
+            playerRect.setFill(Color.color(0, 0, 0, 0.2));
+        } else {
+            playerRect.setFill(Color.color(0,0,0,0));
+        }
         playerRect.setX(400 + 40);
         playerRect.setY(400 + 3);
         playerRect.setHeight(125);
         playerRect.setWidth(50);
 
         mainPane.getChildren().add(playerRect);
-
     }
 
+    long prevTime;
     // Game loop
     public void createGameLoop(){
         gameTimer = new AnimationTimer(){
@@ -164,7 +203,7 @@ public class ViewManager {
             @Override
             public void handle(long l) {
 
-                move();
+                move(System.currentTimeMillis() - prevTime);
 
                 // Checks for collision with exits
                 if (mainPane.getChildren().contains(upRect) && playerRect.intersects(upRect.getLayoutBounds())) {
@@ -183,26 +222,20 @@ public class ViewManager {
                 // Check for sign collision
                 if (mainPane.getChildren().contains(signRect) && playerRect.intersects(signRect.getLayoutBounds())) {
                     // Show the bubble
-                    if (!mainPane.getChildren().contains(bubble)) {
-                        mainPane.getChildren().add(bubble);
-                    }
-                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
-                    bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
+                    showBubble();
 
                     if (actionKey) {
+                        // Checks is the textbox has already been added, since this will be true as long as you hold action key
                         if (!mainPane.getChildren().contains(bottomTextBox)) {
                             buyMenu();
                         }
                     }
                 } else if(mainPane.getChildren().contains(bedRect) && playerRect.intersects(bedRect.getLayoutBounds())) {
                     // Show the bubble
-                    if (!mainPane.getChildren().contains(bubble)) {
-                        mainPane.getChildren().add(bubble);
-                    }
-                    bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
-                    bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
+                    showBubble();
 
                     if (actionKey) {
+                        // Checks is the textbox has already been added, since this will be true as long as you hold action key
                         if (!mainPane.getChildren().contains(bottomTextBox)) {
                             sleepMenu();
                         }
@@ -213,9 +246,37 @@ public class ViewManager {
                     buyButtonPressedImage.setViewOrder(0);
                     sleepPressedButtonImage.setViewOrder(0);
                 }
+                prevTime = System.currentTimeMillis();
             }
         };
         gameTimer.start();
+    }
+
+    public void updateInventory(){
+        double cellWidth = (164 - 2 * vGap) / 3;
+        double cellHeight = (110 - hGap - 20) / 2;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                ImageView deedImage = new ImageView(deed);
+
+                deedImage.setFitHeight(cellHeight);
+                deedImage.setPreserveRatio(true);
+
+                Pane pane = new Pane();
+
+                pane.getChildren().add(deedImage);
+                pane.setPrefSize(cellWidth, cellHeight);
+                inventoryPane.add(deedImage,j,i);
+            }
+        }
+    }
+
+    public void showBubble(){
+        if (!mainPane.getChildren().contains(bubble)) {
+            mainPane.getChildren().add(bubble);
+        }
+        bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
+        bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
     }
 
     public void sleepMenu(){
@@ -228,14 +289,15 @@ public class ViewManager {
     public void buyMenu(){
         bottomTextBox.setText(game.currentRoom.getDescription());
         bottomTextBox.setFont(new Font(14));
+        bottomTextBox.setWrappingWidth(380);
 
         mainPane.getChildren().addAll(bottomTextBox, buyButtonPressedImage,buyButtonImage);
     }
 
     public void createSleepButton(){
-        sleepButtonImage.setLayoutX(600);
+        sleepButtonImage.setLayoutX(400);
         sleepButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - sleepButtonImage.getImage().getHeight()/2);
-        sleepPressedButtonImage.setLayoutX(600);
+        sleepPressedButtonImage.setLayoutX(400);
         sleepPressedButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - sleepPressedButtonImage.getImage().getHeight()/2);
 
         sleepButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -262,9 +324,9 @@ public class ViewManager {
     }
 
     public void createBuyButton(){
-        buyButtonImage.setLayoutX(600);
+        buyButtonImage.setLayoutX(400);
         buyButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonImage.getImage().getHeight()/2);
-        buyButtonPressedImage.setLayoutX(600);
+        buyButtonPressedImage.setLayoutX(400);
         buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight()/2 - buyButtonPressedImage.getImage().getHeight()/2);
 
         buyButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -373,33 +435,33 @@ public class ViewManager {
         }
     }
 
-    public void move(){
+    public void move(double deltaTime){
         if (movingLeft){
             // Border check left (Dependent on player size)
             if (playerRect.getX() > 0){
-                player.setXPos(player.getXPos() - player.MOVEMENTSPEED);
-                playerRect.setX(playerRect.getX()- player.MOVEMENTSPEED);
+                player.setXPos(player.getXPos() - player.MOVEMENTSPEED * deltaTime);
+                playerRect.setX(playerRect.getX()- player.MOVEMENTSPEED * deltaTime);
             }
         }
         if (movingRight){
             // Border check right (Dependent on player size)
             if (playerRect.getX() < WIDTH - playerRect.getWidth()){
-                player.setXPos(player.getXPos() + player.MOVEMENTSPEED);
-                playerRect.setX(playerRect.getX() + player.MOVEMENTSPEED);
+                player.setXPos(player.getXPos() + player.MOVEMENTSPEED * deltaTime);
+                playerRect.setX(playerRect.getX() + player.MOVEMENTSPEED * deltaTime);
             }
         }
         if (movingUp){
             // Border check top (Dependent on player size)
             if (playerRect.getY() > 0){
-                player.setYPos(player.getYPos() - player.MOVEMENTSPEED);
-                playerRect.setY(playerRect.getY()- player.MOVEMENTSPEED);
+                player.setYPos(player.getYPos() - player.MOVEMENTSPEED * deltaTime);
+                playerRect.setY(playerRect.getY()- player.MOVEMENTSPEED * deltaTime);
             }
         }
         if (movingDown){
             // Border check bottom (Dependent on player size)
             if (playerRect.getY() < GAMEHEIGHT - playerRect.getHeight()){
-                player.setYPos(player.getYPos() + player.MOVEMENTSPEED);
-                playerRect.setY(playerRect.getY() + player.MOVEMENTSPEED);
+                player.setYPos(player.getYPos() + player.MOVEMENTSPEED * deltaTime);
+                playerRect.setY(playerRect.getY() + player.MOVEMENTSPEED * deltaTime);
             }
         }
     }

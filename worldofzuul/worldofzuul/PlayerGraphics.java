@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class PlayerGraphics {
-    public final int MOVEMENTSPEED = 3;
+    public final double MOVEMENTSPEED = 0.5;
 
     public int imgHeight;
     public int imgWidth;
