@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class ViewManager {
@@ -155,7 +156,7 @@ public class ViewManager {
 
         // Setup inventory
         // The values have been fine tuned by the pixel, hence the odd numbers
-        updateInventory();
+        updateInventory(game.player.inventory.getInventoryMap());
         inventoryPane.setVgap(vGap);
         inventoryPane.setHgap(hGap);
         inventoryPane.setLayoutX(608);
@@ -252,23 +253,42 @@ public class ViewManager {
         gameTimer.start();
     }
 
-    public void updateInventory(){
+    public void updateInventory(HashMap<Integer, Item> inventory){
+        int i = 0;
+        int j = 0;
+        ImageView deedImage = new ImageView(deed);
+        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 1));
+
         double cellWidth = (164 - 2 * vGap) / 3;
         double cellHeight = (110 - hGap - 20) / 2;
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) {
-                ImageView deedImage = new ImageView(deed);
+        for(Map.Entry<Integer, Item> deed : inventory.entrySet()){
+
+
+                //ImageView deedImage = new ImageView(deed);
 
                 deedImage.setFitHeight(cellHeight);
                 deedImage.setPreserveRatio(true);
 
                 Pane pane = new Pane();
 
+
                 pane.getChildren().add(deedImage);
                 pane.setPrefSize(cellWidth, cellHeight);
-                inventoryPane.add(deedImage,j,i);
-            }
+
+
+                inventoryPane.add(deedImage, j, i);
+                if (i < 3){
+                    i++;
+                } else if (i <= 3){
+                    i = 0;
+                    j++;
+                } else if (j > 1){
+                    System.out.println("what");
+                }
+
+
         }
+
     }
 
     public void showBubble(){

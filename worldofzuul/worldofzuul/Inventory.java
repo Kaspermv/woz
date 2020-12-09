@@ -64,4 +64,8 @@ public class Inventory {
         return true;
 
     }
+
+    public HashMap<Integer, Item> getInventoryMap() {
+        return inventoryMap;
+    }
 }
