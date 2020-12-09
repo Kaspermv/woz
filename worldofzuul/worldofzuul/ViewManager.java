@@ -256,16 +256,18 @@ public class ViewManager {
     public void updateInventory(HashMap<Integer, Item> inventory){
         int i = 0;
         int j = 0;
-        ImageView deedImage = new ImageView(deed);
+        //ImageView deedImage = new ImageView(deed);
+        // THEESE ARE TEST ITEMS
         game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 1));
+        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 2));
+        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 3));
+        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 4));
 
         double cellWidth = (164 - 2 * vGap) / 3;
         double cellHeight = (110 - hGap - 20) / 2;
-        for(Map.Entry<Integer, Item> deed : inventory.entrySet()){
-
-
-                //ImageView deedImage = new ImageView(deed);
-
+        for(Map.Entry<Integer, Item> ded : inventory.entrySet()){
+                ImageView deedImage = new ImageView(deed);
+                deedImage.setFitWidth(cellWidth);
                 deedImage.setFitHeight(cellHeight);
                 deedImage.setPreserveRatio(true);
 
@@ -277,12 +279,12 @@ public class ViewManager {
 
 
                 inventoryPane.add(deedImage, j, i);
-                if (i < 3){
-                    i++;
-                } else if (i <= 3){
-                    i = 0;
+                if (j < 2){
                     j++;
-                } else if (j > 1){
+                } else if (j <= 2){
+                    j = 0;
+                    i++;
+                } else if (i > 1){
                     System.out.println("what");
                 }
 
