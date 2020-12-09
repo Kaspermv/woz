@@ -19,7 +19,7 @@ public class Start extends Application {
         // Final update of canvas
         primaryStage.show();
     }
-
+//Creates a new instance of Game
     public static void main(String[] args) {
         launch(args);
     }

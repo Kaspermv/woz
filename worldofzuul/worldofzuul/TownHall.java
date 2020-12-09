@@ -8,7 +8,7 @@ public class TownHall extends Room{
         super(name, description, secondDescription, hasPrice, exits);
 
         for (int i = 0; i < 5; i++) {
-            inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75));
+            inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, i));
         }
     }
 
