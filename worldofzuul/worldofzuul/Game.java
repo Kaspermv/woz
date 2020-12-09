@@ -9,7 +9,7 @@ public class Game
     PlayerState player = new PlayerState();
     private Parser parser;
     //Variable storing the current room the player is in
-    private Room currentRoom;
+    public Room currentRoom;
     //Variable for amount of days passed in game
     public int day = 0;
     //Variable to keep track of how many rooms ar finished
@@ -207,7 +207,7 @@ public class Game
     }
 
     // This performs the main game actions, which takes a command from the parser
-    private boolean processCommand(Command command) {
+    protected boolean processCommand(Command command) {
         boolean wantToQuit = false;
 
         // Stores the enum from the command in a variable
@@ -354,6 +354,7 @@ public class Game
                 wantToQuit = quit(command);
 
         }
+        return false;
     }
 
 
