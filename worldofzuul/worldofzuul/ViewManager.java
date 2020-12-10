@@ -28,9 +28,9 @@ public class ViewManager {
     public int GAMEHEIGHT = 800;
     public int WIDTH = 800;
 
-    private int buttonX = 420;
+    final private int buttonX = 420;
 
-    public boolean debugMode = true;
+    public boolean debugMode = false;
 
     public AnchorPane mainPane;
     public Scene mainScene;
@@ -89,10 +89,6 @@ public class ViewManager {
         player = new PlayerGraphics();
         // Display player on top
         player.img.setViewOrder(-1);
-        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 1));
-        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 2));
-        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 3));
-        game.player.inventory.addItem(new Item("Road-upgrade", "Upgrades dirt road to asphalt road", 75, 4));
         // Loads background images into a hashmap
         backgrounds = new HashMap<>();
         try {
@@ -147,7 +143,7 @@ public class ViewManager {
         townHallRect = new Rectangle(200,100,400,150);
         if (debugMode){
             townHallRect.setFill(Color.color(0,0,0,0.2));
-        }
+        } else townHallRect.setFill(Color.color(0,0,0,0.0));
 
         // Textbox setup
         textbox.setY(800);
@@ -262,7 +258,7 @@ public class ViewManager {
                             sleepMenu();
                         }
                     }
-                } else if (mainPane.getChildren().contains(townHallRect) && playerRect.intersects(townHallRect.getLayoutBounds())) {
+                } else if (mainPane.getChildren().contains(townHallRect) && playerRect.intersects(townHallRect.getLayoutBounds()) && !game.townHall.inventory.getInventoryMap().isEmpty()) {
                     // Show the bubble
                     showBubble();
 
@@ -273,7 +269,7 @@ public class ViewManager {
                         }
                     }
 
-                } else if (game.currentRoom.description.equals("outside on a dirt road.") && !game.player.inventory.getInventoryMap().isEmpty()) {
+                } else if (game.currentRoom.description.equals("outside on a dirt road.") && !game.player.inventory.getInventoryMap().isEmpty() && game.currentRoom.currentLevel != game.currentRoom.maxLevel) {
                     //show the bubble
                     showBubble();
 
@@ -506,7 +502,11 @@ public class ViewManager {
             mainPane.getChildren().removeAll(sign, signRect);
         } else if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel == game.currentRoom.maxLevel) {
             // Upgraded road NEEDS NEW GRAPHICS
-            mainPane.setBackground(backgrounds.get("Asphalt road"));
+            if (game.currentRoom.description.equals("outside on a dirt road.")) {
+                mainPane.setBackground(backgrounds.get("Asphalt road"));
+            } else{
+                mainPane.setBackground(backgrounds.get(game.currentRoom.name));
+            }
             mainPane.getChildren().removeAll(sign, signRect);
         } else if (game.currentRoom.currentLevel == 0) {
             // Empty plots of land. Not housing and power plant
