@@ -28,7 +28,9 @@ public class ViewManager {
     public int GAMEHEIGHT = 800;
     public int WIDTH = 800;
 
-    public boolean debugMode = false;
+    private int buttonX = 420;
+
+    public boolean debugMode = true;
 
     public AnchorPane mainPane;
     public Scene mainScene;
@@ -57,6 +59,7 @@ public class ViewManager {
     private Rectangle signRect;
     private Rectangle bedRect;
     private ImageView bed;
+    private Rectangle townHallRect;
 
     public Rectangle playerRect;
 
@@ -140,6 +143,12 @@ public class ViewManager {
             signRect.setFill(Color.color(0, 0, 0, 0));
         }
 
+        // Townhall setup
+        townHallRect = new Rectangle(200,100,400,150);
+        if (debugMode){
+            townHallRect.setFill(Color.color(0,0,0,0.2));
+        }
+
         // Textbox setup
         textbox.setY(800);
         textbox.setX(0);
@@ -171,7 +180,7 @@ public class ViewManager {
         inventoryPane.setLayoutX(608);
         inventoryPane.setLayoutY(GAMEHEIGHT + 45);
         inventoryPane.setViewOrder(-2);
-        inventoryPane.setGridLinesVisible(true);
+        inventoryPane.setGridLinesVisible(debugMode);
         inventoryBackground.setLayoutX(604);
         inventoryBackground.setLayoutY(GAMEHEIGHT + 20);
         inventoryBackground.setViewOrder(-1);
@@ -248,9 +257,19 @@ public class ViewManager {
                     showBubble();
 
                     if (actionKey) {
-                        // Checks is the textbox has already been added, since this will be true as long as you hold action key
+                        // Checks if the textbox has already been added, since this will be true as long as you hold action key
                         if (!mainPane.getChildren().contains(bottomTextBox)) {
                             sleepMenu();
+                        }
+                    }
+                } else if (mainPane.getChildren().contains(townHallRect) && playerRect.intersects(townHallRect.getLayoutBounds())) {
+                    // Show the bubble
+                    showBubble();
+
+                    if (actionKey) {
+                        // Checks if the textbox has already been added, since this will be true as long as you hold action key
+                        if (!mainPane.getChildren().contains(bottomTextBox)) {
+                            townhallMenu();
                         }
                     }
 
@@ -279,12 +298,11 @@ public class ViewManager {
     }
 
     public void updateInventory(HashMap<Integer, Item> inventory) {
-        int i = 0;
-        int j = 0;
-        //ImageView deedImage = new ImageView(deed);
-
+        inventoryPane.getChildren().clear();
+        int number = 0;
         double cellWidth = (164 - 2 * vGap) / 3;
         double cellHeight = (110 - hGap - 20) / 2;
+
         for (Map.Entry<Integer, Item> ded : inventory.entrySet()) {
             ImageView deedImage = new ImageView(deed);
             deedImage.setFitWidth(cellWidth);
@@ -292,22 +310,12 @@ public class ViewManager {
             deedImage.setPreserveRatio(true);
 
             Pane pane = new Pane();
+
             pane.getChildren().add(deedImage);
             pane.setPrefSize(cellWidth, cellHeight);
 
-
-            inventoryPane.add(deedImage, j, i);
-
-            if (j < 2) {
-                j++;
-            } else if (j <= 2) {
-                j = 0;
-                i++;
-            } else if (i > 1) {
-                System.out.println("what");
-            }
-
-
+            inventoryPane.add(deedImage, number%3, Math.floorDiv(number,3));
+            number++;
         }
 
     }
@@ -327,6 +335,14 @@ public class ViewManager {
         mainPane.getChildren().addAll(bottomTextBox, sleepPressedButtonImage, sleepButtonImage);
     }
 
+    public void townhallMenu(){
+        bottomTextBox.setText("You can buy this item to upgrade your town:\n" + game.townHall.inventory.getItem("Road-upgrade") + "\nPress BUY to buy one upgrade form.\nYou can buy up to 5.");
+        bottomTextBox.setFont(new Font(14));
+        bottomTextBox.setWrappingWidth(380);
+
+        mainPane.getChildren().addAll(bottomTextBox, buyButtonPressedImage, buyButtonImage);
+    }
+
     public void buyMenu() {
         bottomTextBox.setText(game.currentRoom.getDescription());
         bottomTextBox.setFont(new Font(14));
@@ -344,9 +360,9 @@ public class ViewManager {
     }
 
     public void createSleepButton() {
-        sleepButtonImage.setLayoutX(400);
+        sleepButtonImage.setLayoutX(buttonX);
         sleepButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - sleepButtonImage.getImage().getHeight() / 2);
-        sleepPressedButtonImage.setLayoutX(400);
+        sleepPressedButtonImage.setLayoutX(buttonX);
         sleepPressedButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - sleepPressedButtonImage.getImage().getHeight() / 2);
 
         sleepButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -398,13 +414,10 @@ public class ViewManager {
         });
     }
 
-
-
-
     public void createBuyButton() {
-        buyButtonImage.setLayoutX(400);
+        buyButtonImage.setLayoutX(buttonX);
         buyButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - buyButtonImage.getImage().getHeight() / 2);
-        buyButtonPressedImage.setLayoutX(400);
+        buyButtonPressedImage.setLayoutX(buttonX);
         buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - buyButtonPressedImage.getImage().getHeight() / 2);
 
         buyButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -418,10 +431,17 @@ public class ViewManager {
             @Override
             public void handle(MouseEvent event) {
                 buyButtonPressedImage.setViewOrder(0);
-                game.processCommand(new Command(Action.BUY, null));
+                if (game.currentRoom.name == "Town hall"){
+                    game.processCommand(new Command(Action.BUY, "Road-upgrade"));
+                    bottomTextBox.setText("You bought an item, you can use it on a dirt road.");
+                    updateInventory(game.player.inventory.getInventoryMap());
+                } else{
+                    game.processCommand(new Command(Action.BUY, null));
+                    chooseBackground();
+                    bottomTextBox.setText(game.currentRoom.getDescription());
+                }
+
                 dataText.setText(MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality, game.player.income));
-                chooseBackground();
-                bottomTextBox.setText(game.currentRoom.getDescription());
                 event.consume();
             }
         });
@@ -453,10 +473,12 @@ public class ViewManager {
 
         chooseBackground();
 
-        if (game.currentRoom.name != "Home") {
-            mainPane.getChildren().removeAll(bedRect, bed);
-        } else {
+        if (game.currentRoom.name == "Home") {
             mainPane.getChildren().addAll(bedRect, bed);
+        } else if (game.currentRoom.name == "Town hall") {
+            mainPane.getChildren().add(townHallRect);
+        } else {
+            mainPane.getChildren().removeAll(bedRect, bed,townHallRect);
         }
 
         // Reset player position
@@ -512,9 +534,6 @@ public class ViewManager {
             mainPane.getChildren().removeAll(sign, signRect);
         }
     }
-
-
-
 
     public void move(double deltaTime) {
         if (movingLeft) {

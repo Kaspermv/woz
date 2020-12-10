@@ -15,7 +15,7 @@ public class Item {
 
     @Override
     public String toString() {
-        return "Name: " + name + ". Description: " + description + ". Price: $" + price;
+        return name + ". " + description + ". Price: $" + price;
     }
 
     public String getName(){
