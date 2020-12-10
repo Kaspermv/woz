@@ -34,7 +34,6 @@ public class Game
 
     private void createRooms() {
 
-
         // Creates all the rooms, and sets their description.
         home = new Room("Home","in your home.", "in your home", false, "up");
         dirtRoad1 = new Room("Dirt road","outside on a dirt road.", "outside on an asphalt road", false, "all");
@@ -231,10 +230,6 @@ public class Game
                         player.setCanSleep(true);
                         player.setBalance(player.getBalance() - item.getPrice());
 
-                        System.out.println("You bought the item");
-                        System.out.println("You can buy these items to upgrade your town:");
-                        System.out.println(townHall.toString());
-                        System.out.println("To buy an item, type BUY and the name of the item.");
                         break;
                     }
                 } else if (player.getBalance() >= currentRoom.getPrice() && currentRoom.buyable(player.getLifeQuality()) && !command.hasSecondWord()) {
