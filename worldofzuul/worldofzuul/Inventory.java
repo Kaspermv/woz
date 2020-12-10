@@ -22,13 +22,13 @@ public class Inventory {
     }
 
 
-    public Item getItem(String id) {
+    public Item getItem(String input) {
         if (!inventoryMap.isEmpty()) {
-            if (isNumeric(id)) {
-                return inventoryMap.get(Integer.parseInt(id));
+            if (isNumeric(input)) {
+                return inventoryMap.get(Integer.parseInt(input));
             } else
                 for (Map.Entry<Integer, Item> items: inventoryMap.entrySet()){
-                    if (items.getValue().getName().equals(id)){
+                    if (items.getValue().getName().equals(input)){
                         return inventoryMap.get(items.getKey());
                     }
                 }
@@ -44,9 +44,9 @@ public class Inventory {
 
     @Override
     public String toString(){
-        String s ="";
-        for (Map.Entry<Integer, Item> items: inventoryMap.entrySet()) {
-             s += items.toString() + "\n";
+        String s = "";
+        for (Map.Entry<Integer, Item> item: inventoryMap.entrySet()) {
+             s += item.getValue().toString() + "\n";
         }
         return s;
     }
@@ -63,5 +63,9 @@ public class Inventory {
         }
         return true;
 
+    }
+
+    public HashMap<Integer, Item> getInventoryMap() {
+        return inventoryMap;
     }
 }
