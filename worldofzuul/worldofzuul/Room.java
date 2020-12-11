@@ -26,9 +26,12 @@ public class Room
     public int qualityPerLevel;
     // variable for gained income per upgrade
     public int payPerLevel;
+    // variable for required life quality to upgrade
     public int qualityRequirementPerLevel = 0;
+    // variable for checking if room has a price
     public boolean hasPrice;
 
+    //constructs room
     public Room(String name, String description, String secondDescription, boolean hasPrice, String exitType)
     {
         this.description = description;
@@ -39,11 +42,13 @@ public class Room
         exits = new HashMap<String, Room>();
     }
 
+
     // Returns true if this room can be bought/upgraded
     public Boolean buyable(int quality){
         return (currentLevel < maxLevel && quality > getQualityRequirement() && hasPrice);
     }
 
+    // method to buy or upgrade a room
     public void buy(){
         currentLevel++;
         if (currentLevel == maxLevel) {
@@ -51,9 +56,7 @@ public class Room
         }
     }
 
-    // Getters and setters for values
-
-
+    // Getters and setters for variables (attributes)
     public int getPayPerLevel() {
         return payPerLevel;
     }
