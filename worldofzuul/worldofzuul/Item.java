@@ -6,6 +6,7 @@ public class Item {
     private int price;
     private int id;
 
+    //constructs an item
     public Item(String name, String description, int price, int id) {
         this.name = name;
         this.description = description;
@@ -13,35 +14,25 @@ public class Item {
         this.id = id;
     }
 
+
+    //returns item in string form
     @Override
     public String toString() {
         return name + ". " + description + ". Price: $" + price;
     }
 
-    public String getName(){
+    //returns item name
+    public String getName() {
         return name;
     }
 
+    //returns item price
     public int getPrice() {
         return price;
     }
 
+    //returns  item id
     public int getId() {
         return id;
-    }
-
-
-
-
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Integer i = Integer.parseInt(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
     }
 }
