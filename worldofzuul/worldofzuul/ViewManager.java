@@ -25,11 +25,14 @@ import java.util.Map;
 
 public class ViewManager {
 
+    // Width and height of the game window, not the entire window
     public int GAMEHEIGHT = 800;
     public int WIDTH = 800;
 
+    // X location of the buttons in the menu
     final private int buttonX = 420;
 
+    // If true, the hitboxes will be rendered as semi-transparent, as opposed to transparent
     public boolean debugMode = false;
 
     public AnchorPane mainPane;
@@ -38,11 +41,13 @@ public class ViewManager {
 
     private AnimationTimer gameTimer;
 
+    // Values used for movement
     private boolean movingUp;
     private boolean movingDown;
     private boolean movingLeft;
     private boolean movingRight;
 
+    // 'E' key, used for interacting in the environment
     private boolean actionKey;
 
     // Exit hitboxes
@@ -51,6 +56,7 @@ public class ViewManager {
     private Rectangle leftRect;
     private Rectangle rightRect;
 
+    // Various images and their hitboxes
     private ImageView bubble;
     private ImageView textbox;
     private ImageView dataFrame;
@@ -61,8 +67,10 @@ public class ViewManager {
     private ImageView bed;
     private Rectangle townHallRect;
 
+    // Player hitbox
     public Rectangle playerRect;
 
+    // More images and the text object
     private Text bottomTextBox;
     private ImageView buyButtonImage;
     private ImageView buyButtonPressedImage;
@@ -71,23 +79,29 @@ public class ViewManager {
     private ImageView useButtonImage;
     private ImageView usePressedButtonImage;
 
+    // A hashmap of all the background images, stored as Background objects
     public HashMap<String, Background> backgrounds;
+    // A File object, directed to the folder where the background images are
     final File dir = new File("Graphics/Backgrounds");
 
+    // Values used for the displaying of the player inventory
     private GridPane inventoryPane;
     private ImageView inventoryBackground;
     private Image deed;
     private final double vGap = 4;
     private final double hGap = 4;
 
+    // A player object, that has values related to the visuals of the player
     public PlayerGraphics player;
 
+    // The game logic
     public Game game;
 
     public ViewManager() {
+        // Instantiating the game and player graphics objects
         game = new Game();
         player = new PlayerGraphics();
-        // Display player on top
+        // Display player on top (lower is on top, 0 is default)
         player.img.setViewOrder(-1);
         // Loads background images into a hashmap
         backgrounds = new HashMap<>();
@@ -96,6 +110,7 @@ public class ViewManager {
                 Image tempImage = new Image(imgFile.getPath());
                 BackgroundImage tempBackgroundImage = new BackgroundImage(tempImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(WIDTH, GAMEHEIGHT, false, false, true, false));
                 Background tempBackground = new Background(tempBackgroundImage);
+                // Gets the name of the png image and uses it as the key for storing the related image in the hashmap
                 String name = imgFile.getName().substring(0, imgFile.getName().lastIndexOf("."));
                 backgrounds.put(name, tempBackground);
             }
@@ -158,10 +173,12 @@ public class ViewManager {
         dataText.setFont(new Font(12.5));
         dataText.setViewOrder(-3);
 
+        // Creation of buttons in seperate methods for easier reading because they use handlers for the Mouse Events
         createBuyButton();
         createSleepButton();
         createUseButton();
 
+        // Instantiating the window ect.
         inventoryPane = new GridPane();
         mainPane = new AnchorPane(inventoryPane);
         mainScene = new Scene(mainPane, WIDTH, GAMEHEIGHT + textbox.getImage().getHeight());
@@ -191,6 +208,7 @@ public class ViewManager {
         leftRect = new Rectangle(0, 300, 5, 200);
         leftRect.setFill(Color.GRAY);
 
+        // Adds the initial nodes to the scene (AnchorPane)
         createExits();
         mainPane.setBackground(backgrounds.get(game.currentRoom.name));
         mainPane.getChildren().addAll(player.img, textbox, dataFrame, dataText, bedRect, bed, inventoryBackground);
@@ -206,12 +224,10 @@ public class ViewManager {
         playerRect.setY(400 + 3);
         playerRect.setHeight(125);
         playerRect.setWidth(50);
-
+        // Adding player hitbox separately, due to position origin resetting
         mainPane.getChildren().add(playerRect);
     }
-
-
-
+    // Used to calculate delta time between frames, for a consistent movementspeed, across different monitors with different refresh rates
     long prevTime;
 
     // Game loop
@@ -220,7 +236,7 @@ public class ViewManager {
 
             @Override
             public void handle(long l) {
-
+                // Moves the player dependent on delta time
                 move(System.currentTimeMillis() - prevTime);
 
                 // Checks for collision with exits
@@ -243,7 +259,7 @@ public class ViewManager {
                     showBubble();
 
                     if (actionKey) {
-                        // Checks is the textbox has already been added, since this will be true as long as you hold action key
+                        // Checks if the textbox has already been added, since this will be true as long as you hold action key
                         if (!mainPane.getChildren().contains(bottomTextBox)) {
                             buyMenu();
                         }
@@ -282,6 +298,7 @@ public class ViewManager {
 
 
                 } else if (mainPane.getChildren().contains(bubble)) {
+                    // Removes all the menu options if no collision is detected anymore
                     mainPane.getChildren().removeAll(bubble, bottomTextBox, buyButtonImage, buyButtonPressedImage, sleepButtonImage, sleepPressedButtonImage, useButtonImage, usePressedButtonImage);
                     buyButtonPressedImage.setViewOrder(0);
                     sleepPressedButtonImage.setViewOrder(0);
@@ -294,12 +311,16 @@ public class ViewManager {
     }
 
     public void updateInventory(HashMap<Integer, Item> inventory) {
+        // When updating the inventory view, it's first cleared, so no duplicate errors occur
         inventoryPane.getChildren().clear();
         int number = 0;
+        // The calculated width and height of the individual item cell
         double cellWidth = (164 - 2 * vGap) / 3;
         double cellHeight = (110 - hGap - 20) / 2;
 
+        // Loop over the given hashmap of items
         for (Map.Entry<Integer, Item> ded : inventory.entrySet()) {
+            // Creates a new ImageView object for each item, because the same image cannot be added more than once
             ImageView deedImage = new ImageView(deed);
             deedImage.setFitWidth(cellWidth);
             deedImage.setFitHeight(cellHeight);
@@ -309,21 +330,25 @@ public class ViewManager {
 
             pane.getChildren().add(deedImage);
             pane.setPrefSize(cellWidth, cellHeight);
-
+            // Adds the image to the inventory grid pane at the calculated row and column
             inventoryPane.add(deedImage, number%3, Math.floorDiv(number,3));
             number++;
         }
 
     }
 
+    // Shows a bubble that indicates an interaction is possible
     public void showBubble() {
+        // Only add the image if it's not already been added
         if (!mainPane.getChildren().contains(bubble)) {
             mainPane.getChildren().add(bubble);
         }
+        // Update the location of the bubble to be right above the players head (called every frame the bubble is active)
         bubble.setLayoutX(playerRect.getX() + playerRect.getWidth() / 2 - bubble.getImage().getWidth() / 2);
         bubble.setLayoutY(playerRect.getY() - bubble.getImage().getHeight() - 5);
     }
 
+    // Shows text in the textbox and a button for sleeping
     public void sleepMenu() {
         bottomTextBox.setText("Sleep here for a nights rest, and gain income.");
         bottomTextBox.setFont(new Font(14));
@@ -331,6 +356,7 @@ public class ViewManager {
         mainPane.getChildren().addAll(bottomTextBox, sleepPressedButtonImage, sleepButtonImage);
     }
 
+    // Shows text in the textbox and a button for buying an item in the town hall
     public void townhallMenu(){
         bottomTextBox.setText("You can buy this item to upgrade your town:\n" + game.townHall.inventory.getItem("Road-upgrade") + "\nPress BUY to buy one upgrade form.\nYou can buy up to 5.");
         bottomTextBox.setFont(new Font(14));
@@ -339,6 +365,7 @@ public class ViewManager {
         mainPane.getChildren().addAll(bottomTextBox, buyButtonPressedImage, buyButtonImage);
     }
 
+    // Shows text in the textbox and a button for buying a property or upgrading it
     public void buyMenu() {
         bottomTextBox.setText(game.currentRoom.getDescription());
         bottomTextBox.setFont(new Font(14));
@@ -347,6 +374,7 @@ public class ViewManager {
         mainPane.getChildren().addAll(bottomTextBox, buyButtonPressedImage, buyButtonImage);
     }
 
+    // Shows text in the textbox and a button for using an item on a dirt road
     public void useMenu() {
         bottomTextBox.setText("Do you want to use a deed to upgrade the dirt road?");
         bottomTextBox.setFont(new Font(14));
@@ -355,12 +383,15 @@ public class ViewManager {
         mainPane.getChildren().addAll(bottomTextBox, usePressedButtonImage, useButtonImage);
     }
 
+    // Create the sleep button and the Mouse Handlers for the button
     public void createSleepButton() {
+        // Display the button
         sleepButtonImage.setLayoutX(buttonX);
         sleepButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - sleepButtonImage.getImage().getHeight() / 2);
         sleepPressedButtonImage.setLayoutX(buttonX);
         sleepPressedButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - sleepPressedButtonImage.getImage().getHeight() / 2);
 
+        // When the button image is pressed, the pressed image is displayed on top
         sleepButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -368,12 +399,15 @@ public class ViewManager {
                 event.consume();
             }
         });
+        // When the button is released, the sleep action is performed in the game logic
         sleepButtonImage.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 sleepPressedButtonImage.setViewOrder(0);
+                // If the player is able to sleep, they do, and the appropriate message is displayed in the text box
                 if (game.player.isCanSleep()) {
                     game.processCommand(new Command(Action.SLEEP, null));
+                    // The data at the top of the screen is re-drawn
                     dataText.setText(MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality, game.player.income));
                     bottomTextBox.setText("You wake up on day " + game.day + ", check your bank account.");
                 } else {
@@ -384,12 +418,15 @@ public class ViewManager {
         });
     }
 
+    // Create the use button and the Mouse Handlers for the button
     public void createUseButton() {
+        // Display the button
         useButtonImage.setLayoutX(400);
         useButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - useButtonImage.getImage().getHeight() / 2);
         usePressedButtonImage.setLayoutX(400);
         usePressedButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - usePressedButtonImage.getImage().getHeight() / 2);
 
+        // When the button image is pressed, the pressed image is displayed on top
         useButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -397,12 +434,15 @@ public class ViewManager {
                 event.consume();
             }
         });
+        // When the button is released, the use action is performed in the game logic
         useButtonImage.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 usePressedButtonImage.setViewOrder(0);
                 game.processCommand(new Command(Action.USE, "Road-upgrade"));
+                // The inventory visuals are updated
                 updateInventory(game.player.inventory.getInventoryMap());
+                // The background is re-picked and drawn
                 chooseBackground();
 
                 event.consume();
@@ -410,12 +450,15 @@ public class ViewManager {
         });
     }
 
+    // Create the use button and the Mouse Handlers for the button
     public void createBuyButton() {
+        // Display the button
         buyButtonImage.setLayoutX(buttonX);
         buyButtonImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - buyButtonImage.getImage().getHeight() / 2);
         buyButtonPressedImage.setLayoutX(buttonX);
         buyButtonPressedImage.setLayoutY(GAMEHEIGHT + textbox.getImage().getHeight() / 2 - buyButtonPressedImage.getImage().getHeight() / 2);
 
+        // When the button image is pressed, the pressed image is displayed on top
         buyButtonImage.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -423,26 +466,42 @@ public class ViewManager {
                 event.consume();
             }
         });
+        // When the button is released, the buy action is performed in the game logic
         buyButtonImage.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 buyButtonPressedImage.setViewOrder(0);
-                if (game.currentRoom.name == "Town hall"){
-                    game.processCommand(new Command(Action.BUY, "Road-upgrade"));
-                    bottomTextBox.setText("You bought an item, you can use it on a dirt road.");
-                    updateInventory(game.player.inventory.getInventoryMap());
-                } else{
-                    game.processCommand(new Command(Action.BUY, null));
-                    chooseBackground();
-                    bottomTextBox.setText(game.currentRoom.getDescription());
-                }
 
+                // If the player is in the town hall they try to buy an item, else they try to buy real-estate
+                if (game.currentRoom.name == "Town hall"){
+                    // If the player can buy the item, they do
+                    if (game.player.getBalance() > game.townHall.inventory.getItem("Road-upgrade").getPrice()){
+                        // The game logic is ran, so the player gets an item
+                        game.processCommand(new Command(Action.BUY, "Road-upgrade"));
+                        bottomTextBox.setText("You bought an item, you can use it on a dirt road.");
+                        // The inventory visuals are updated
+                        updateInventory(game.player.inventory.getInventoryMap());
+                    } else bottomTextBox.setText("You dont have enough money.");
+
+                } else{
+                    // If the player can buy the real-estate they do
+                    if (game.player.getBalance() > game.currentRoom.getPrice()){
+                        // The game logic is ran, so the room is upgraded
+                        game.processCommand(new Command(Action.BUY, null));
+                        // The background is re-picked and drawn
+                        chooseBackground();
+                        // If the room can be upgraded further, the ned description is displayed
+                        bottomTextBox.setText(game.currentRoom.getDescription());
+                    } else bottomTextBox.setText("You dont have enough money.");
+                }
+                // This button changes the players stats, so it's re-drawn
                 dataText.setText(MessageFormat.format("Balance: ${0,number,integer} Life quality: {1,number,integer} Income pr day: ${2,number,integer}", game.player.balance, game.player.lifeQuality, game.player.income));
                 event.consume();
             }
         });
     }
 
+    // Adds the currently needed exit hitboxes for the current room
     public void createExits() {
         switch (game.currentRoom.exitLocations) {
             case "up":
@@ -464,11 +523,15 @@ public class ViewManager {
         }
     }
 
+    // Changes the current room in logic and visually
     public void changeRoom(String direction) {
+        // The logic is ran
         game.processCommand(new Command(Action.GO, direction));
 
+        // The correct background is drawn
         chooseBackground();
 
+        // The custom interactive hitboxes are added if needed
         if (game.currentRoom.name == "Home") {
             mainPane.getChildren().addAll(bedRect, bed);
         } else if (game.currentRoom.name == "Town hall") {
@@ -491,9 +554,11 @@ public class ViewManager {
             playerRect.setX(playerRect.getWidth() + 10);
             player.setXPos(playerRect.getWidth() + 7);
         }
+        // Redo the exits for the current room
         createExits();
     }
 
+    // Changes the current background is displayed, based on the currentRoom value in game
     public void chooseBackground() {
         // Choose which background and sign to display
         if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel != game.currentRoom.maxLevel) {
@@ -501,7 +566,7 @@ public class ViewManager {
             mainPane.setBackground(backgrounds.get(game.currentRoom.name));
             mainPane.getChildren().removeAll(sign, signRect);
         } else if (!game.currentRoom.hasPrice && game.currentRoom.currentLevel == game.currentRoom.maxLevel) {
-            // Upgraded road NEEDS NEW GRAPHICS
+            // Upgraded road
             if (game.currentRoom.description.equals("outside on a dirt road.")) {
                 mainPane.setBackground(backgrounds.get("Asphalt road"));
             } else{
@@ -566,6 +631,7 @@ public class ViewManager {
         }
     }
 
+    // Creates an always active key listener that sets values to true/false depending on the activation of the WASD keys or E
     public void createKeyListeners() {
         mainScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -608,6 +674,7 @@ public class ViewManager {
         });
     }
 
+    // Returns the stage thats being created in this class, for use in the Start class
     public Stage getMainStage() {
         return mainStage;
     }
