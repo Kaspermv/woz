@@ -396,7 +396,7 @@ public class Game
         }
     }
 
-
+    //prints balance, life quality, income
     private void printStatus(Command command) {
         if (command.hasSecondWord()) {
             System.out.println("Status command doesn't take an argument");
@@ -414,19 +414,5 @@ public class Game
             return true;
         }
     }
-
-
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Integer i = Integer.parseInt(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
-
 
 }
