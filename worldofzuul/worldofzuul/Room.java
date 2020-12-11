@@ -9,19 +9,29 @@ public class Room
 {
     // This is the description for displaying where the player is, e.g. "in the bedroom".
     public String description;
+    // Upgraded room description
     public String secondDescription;
     // This stores all the adjecent rooms that the player can access, with the direction to the room.
     public HashMap<String, Room> exits;
+    //
     public String exitLocations;
+    //room name
     public String name;
 
+    // creates variables to hold rooms current level and max level
     public int currentLevel = 0, maxLevel = 0;
+    // variable for price per upgrade
     public int pricePerLevel;
+    // variable for gained life quality per upgrade
     public int qualityPerLevel;
+    // variable for gained income per upgrade
     public int payPerLevel;
+    // variable for required life quality to upgrade
     public int qualityRequirementPerLevel = 0;
+    // variable for checking if room has a price
     public boolean hasPrice;
 
+    //constructs room
     public Room(String name, String description, String secondDescription, boolean hasPrice, String exitType)
     {
         this.description = description;
@@ -32,11 +42,13 @@ public class Room
         exits = new HashMap<String, Room>();
     }
 
+
     // Returns true if this room can be bought/upgraded
     public Boolean buyable(int quality){
         return (currentLevel < maxLevel && quality > getQualityRequirement() && hasPrice);
     }
 
+    // method to buy or upgrade a room
     public void buy(){
         currentLevel++;
         if (currentLevel == maxLevel) {
@@ -44,9 +56,7 @@ public class Room
         }
     }
 
-    // Getters and setters for values
-
-
+    // Getters and setters for variables (attributes)
     public int getPayPerLevel() {
         return payPerLevel;
     }

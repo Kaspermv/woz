@@ -4,6 +4,7 @@ public class TownHall extends Room{
 
     public Inventory inventory = new Inventory();
 
+    //constructs a Town Hall which is a room with an inventory
     public TownHall(String name, String description, String secondDescription, boolean hasPrice, String exits){
         super(name, description, secondDescription, hasPrice, exits);
 

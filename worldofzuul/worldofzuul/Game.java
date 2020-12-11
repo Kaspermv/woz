@@ -1,9 +1,5 @@
 package worldofzuul;
 
-import com.sun.security.jgss.GSSUtil;
-
-import java.sql.SQLOutput;
-
 public class Game
 {
     PlayerState player = new PlayerState();
@@ -21,6 +17,7 @@ public class Game
     public Room home, dirtRoad1, dirtRoad2, dirtRoad3, dirtRoad4, dirtRoad5, city, bank, powerplant, windmills,
             housing, park, hospital, waterPlant, waterTreatmentPlant, school, sportsFacility, market;
 
+    //Declares a townhall
     public TownHall townHall;
 
 
@@ -211,12 +208,15 @@ public class Game
 
         // Stores the enum from the command in a variable
         Action commandWord = command.getCommandWord();
-
+        //processes the command using switch statement
         switch (command.getCommandWord()) {
+            //if command is Go, call method goRoom and go to a new room
             case GO:
                 goRoom(command);
                 break;
+                //If command is buy, check if room is town hall to buy an item, or if room is upgradeable to upgrade a room
             case BUY:
+
                 if (command.hasSecondWord() && currentRoom == townHall) {
                     // Buys item from vendor
                     Item item = townHall.inventory.getItem(command.getSecondWord());
@@ -224,22 +224,26 @@ public class Game
                         System.out.println("No item by that name.");
                         return false;
                     }
+                    //if player balance is greater thant the price of the item, add item to player inventory
+                    //and remove item from townhall inventory. Also sets player canSleep to true and updates the balance
                     if (player.getBalance() > item.getPrice()) {
                         player.inventory.addItem(item);
                         townHall.inventory.removeItem(item);
                         player.setCanSleep(true);
                         player.setBalance(player.getBalance() - item.getPrice());
-
                         break;
                     }
+                    //if room is upgradeable and player has enoght money, upgrade room
                 } else if (player.getBalance() >= currentRoom.getPrice() && currentRoom.buyable(player.getLifeQuality()) && !command.hasSecondWord()) {
                     // Buys room if the player has enough money and it isn't max level. HAS LIFEQUALITY CHECK
                     player.setBalance(player.getBalance() - currentRoom.getPrice());
                     player.setIncome(player.getIncome() + currentRoom.getPayPerLevel());
                     player.setLifeQuality(player.getLifeQuality() + currentRoom.getQualityPerLevel());
-
+                    //currentRoom.buy upgrades the room the player is currently in
                     currentRoom.buy();
+                    //sets canSleep to true
                     player.setCanSleep(true);
+                    //prints the new description
                     System.out.println(currentRoom.getDescription());
                     break;
                 } else {
@@ -252,7 +256,7 @@ public class Game
                 System.out.println("I don't know what you mean...");
                 return false;
             case HELP:
-                // The help command
+                // The help command. prints out help on what the commands do
                 if (command.hasSecondWord()) {
                     switch (command.getSecondWord()) {
                         case "go":
@@ -285,10 +289,13 @@ public class Game
                     printHelp();
                     break;
                 }
+                //prints the "status" of the player. Balance, lifequality, income.
             case STATUS:
                 printStatus(command);
                 break;
+                //Function to display inventory
             case INVENTORY:
+                //checks if inventroy is empty and prints "its empty" if true, else prints the contents of the inventory
                 if (!player.inventory.isEmpty()) {
                     System.out.println(player.inventory.toString());
                     break;
@@ -296,12 +303,15 @@ public class Game
                     System.out.println("Inventory is empty.");
                     break;
                 }
+                //proceeds to next day and player gains current income to balance if canSleep is true and player is able to sleep at current position
             case SLEEP:
                 if (command.hasSecondWord()) {
                     System.out.println("Sleep command doesn't take a second argument");
                     break;
                 } else {
+                    //checks if current room is home.
                     if (currentRoom == home) {
+                        //sleeps if player can sleep
                         if (player.isCanSleep()) {
                             //go to sleep
                             System.out.println("Going to sleep");
@@ -320,7 +330,10 @@ public class Game
                     }
                 }
             case USE:
+                //command to use an item
+                //checks if command has second word
                 if (command.hasSecondWord()) {
+                    //checks if current room is a dirt road
                     if (currentRoom == dirtRoad1 || currentRoom == dirtRoad2 || currentRoom == dirtRoad3 || currentRoom == dirtRoad4 || currentRoom == dirtRoad5) {
                         // Upgrades a dirt road, using an item
                         Item item = player.inventory.getItem(command.getSecondWord());
@@ -328,15 +341,17 @@ public class Game
                             System.out.println("No item by that name.");
                             return false;
                         }
+                        //removes item from player inventory
                         player.inventory.removeItem(item);
                         player.setCanSleep(true);
-
+                        //calls currentRoom buy method and upgrades room
                         currentRoom.buy();
                         player.lifeQuality += currentRoom.getQuality();
                         System.out.println("You upgraded the road.");
                         System.out.println(currentRoom.getDescription());
                         break;
                     } else {
+                        //if room is not dirt road, nothing happens
                         System.out.println("You can't use that here.");
                         break;
                     }
@@ -396,7 +411,7 @@ public class Game
         }
     }
 
-
+    //prints balance, life quality, income
     private void printStatus(Command command) {
         if (command.hasSecondWord()) {
             System.out.println("Status command doesn't take an argument");
@@ -414,19 +429,5 @@ public class Game
             return true;
         }
     }
-
-
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Integer i = Integer.parseInt(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
-
 
 }

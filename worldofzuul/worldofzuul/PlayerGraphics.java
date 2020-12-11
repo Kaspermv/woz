@@ -6,14 +6,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class PlayerGraphics {
+    //sets the movement speed for the player graphic
     public final double MOVEMENTSPEED = 0.5;
 
+    //variable for sixe of player
     public int imgHeight;
     public int imgWidth;
 
+    //creates Imageview called img
     public ImageView img;
 
+    //Constructs a PlayerGraphics object that can be used in a JavaFX application
     public PlayerGraphics(){
+        //load the player graphic "Player.png" in the folder Graphics
         Image playerImg = new Image("Graphics/Player.png");
         img = new ImageView(playerImg);
         img.setSmooth(true);
@@ -25,6 +30,7 @@ public class PlayerGraphics {
         imgHeight = (int)playerImg.getHeight();
         imgWidth = (int)playerImg.getWidth();
     }
+
 
     public void setXPos(double value){
         img.setLayoutX(value-35);
