@@ -31,7 +31,7 @@ public class PlayerGraphics {
         imgWidth = (int)playerImg.getWidth();
     }
 
-    
+
     public void setXPos(double value){
         img.setLayoutX(value-35);
     }
